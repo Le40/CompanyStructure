@@ -1,13 +1,14 @@
-﻿using CompanyStructure.Domain.Models;
+﻿using CompanyStructure.Application.DTOs.Employees;
+using CompanyStructure.Domain.Models;
 
 namespace CompanyStructure.Application.Services
 {
     public interface IEmployeeService
     {
-        Task<List<Employee>> GetAllEmployeesAsync(int? companyID);
-        Task<Employee?> GetEmployeeByIdAsync(int id);
-        Task<Employee> CreateEmployeeAsync(Employee employee);
-        Task<Employee> UpdateEmployeeAsync(int id, Employee employee);
-        Task<Employee> DeleteEmployeeAsync(int id);
+        Task<List<GetEmployeeDTO>> GetAllEmployeesAsync(int? companyID);
+        Task<GetEmployeeDTO?> GetEmployeeByIdAsync(int id);
+        Task<ServiceResult<GetEmployeeDTO>> CreateEmployeeAsync(CreateEmployeeDTO dto);
+        Task<ServiceResult<GetEmployeeDTO>> UpdateEmployeeAsync(int id, UpdateEmployeeDTO dto);
+        Task<ServiceResult<bool>> DeleteEmployeeAsync(int id);
     }
 }
