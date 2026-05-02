@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CompanyStructure.Models
+namespace CompanyStructure.Domain.Models
 {
     public class Department : IOrganizationNode
     {

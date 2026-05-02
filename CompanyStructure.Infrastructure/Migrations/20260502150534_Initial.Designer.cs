@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CompanyStructure.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260502143246_Initial")]
+    [Migration("20260502150534_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -198,7 +198,7 @@ namespace CompanyStructure.Infrastructure.Migrations
                     b.HasOne("CompanyStructure.Models.Employee", "Leader")
                         .WithMany()
                         .HasForeignKey("LeaderId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Leader");
                 });

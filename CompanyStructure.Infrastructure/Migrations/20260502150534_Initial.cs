@@ -175,8 +175,7 @@ namespace CompanyStructure.Infrastructure.Migrations
                 table: "Companies",
                 column: "LeaderId",
                 principalTable: "Employees",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                principalColumn: "Id");
         }
 
         /// <inheritdoc />

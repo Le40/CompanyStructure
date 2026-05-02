@@ -1,4 +1,4 @@
-﻿using CompanyStructure.Models;
+﻿using CompanyStructure.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -27,7 +27,7 @@ namespace CompanyStructure.Infrastructure.Data
                 .HasOne(c => c.Leader)
                 .WithMany()
                 .HasForeignKey(c => c.LeaderId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<Company>()
                 .HasMany(c => c.Divisions)
                 .WithOne(d => d.Company)

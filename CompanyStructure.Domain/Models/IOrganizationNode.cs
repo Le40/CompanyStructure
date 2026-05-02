@@ -1,4 +1,4 @@
-﻿namespace CompanyStructure.Models
+﻿namespace CompanyStructure.Domain.Models
 {
     public interface IOrganizationNode
     {

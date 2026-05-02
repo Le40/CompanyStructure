@@ -195,7 +195,7 @@ namespace CompanyStructure.Infrastructure.Migrations
                     b.HasOne("CompanyStructure.Models.Employee", "Leader")
                         .WithMany()
                         .HasForeignKey("LeaderId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Leader");
                 });

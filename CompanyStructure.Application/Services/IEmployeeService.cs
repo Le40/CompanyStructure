@@ -1,6 +1,6 @@
-﻿using CompanyStructure.Models;
+﻿using CompanyStructure.Domain.Models;
 
-namespace CompanyStructure.Services
+namespace CompanyStructure.Application.Services
 {
     public interface IEmployeeService
     {

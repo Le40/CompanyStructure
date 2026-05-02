@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using CompanyStructure.Services;
+using CompanyStructure.Application.Services;
 
 namespace CompanyStructure.Application
 {
@@ -9,6 +9,7 @@ namespace CompanyStructure.Application
         {
             // Register application services here
             services.AddScoped<IEmployeeService, EmployeeService>();
+            services.AddScoped(typeof(IOrganisationNodeService<>), typeof(OrganizationNodeService<>));
             return services;
         }
     }
