@@ -13,5 +13,26 @@ namespace CompanyStructure.Infrastructure.Data
         public DbSet<Division> Divisions { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Department> Departments { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            // Configure relationships and constraints if needed
+            modelBuilder.Entity<Company>()
+                .HasMany(c => c.Employees)
+                .WithOne(e => e.Company)
+                .HasForeignKey(e => e.CompanyId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Company>()
+                .HasOne(c => c.Leader)
+                .WithMany()
+                .HasForeignKey(c => c.LeaderId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Company>()
+                .HasMany(c => c.Divisions)
+                .WithOne(d => d.Company)
+                .HasForeignKey(d => d.CompanyId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }

@@ -1,9 +1,13 @@
-﻿namespace CompanyStructure.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace CompanyStructure.Models
 {
     public class Department : IOrganizationNode
     {
         public int Id { get; set; }
+        [MaxLength(100)]
         public required string Name { get; set; }
+        [MaxLength(50)]
         public required string Code { get; set; }
         public int? LeaderId { get; set; }
         public Employee? Leader { get; set; }
