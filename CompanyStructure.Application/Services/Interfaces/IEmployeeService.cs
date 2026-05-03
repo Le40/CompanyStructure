@@ -1,7 +1,7 @@
 ﻿using CompanyStructure.Application.DTOs.Employees;
 using CompanyStructure.Domain.Models;
 
-namespace CompanyStructure.Application.Services
+namespace CompanyStructure.Application.Services.Interfaces
 {
     public interface IEmployeeService
     {

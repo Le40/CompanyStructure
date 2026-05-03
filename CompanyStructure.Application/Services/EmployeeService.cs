@@ -1,4 +1,5 @@
 ﻿using CompanyStructure.Application.DTOs.Employees;
+using CompanyStructure.Application.Services.Interfaces;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
 using Mapster;

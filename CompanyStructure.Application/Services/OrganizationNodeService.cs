@@ -1,5 +1,6 @@
 ﻿using CompanyStructure.Application.DTOs.Employees;
 using CompanyStructure.Application.DTOs.OrganisationNodes;
+using CompanyStructure.Application.Services.Interfaces;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
 using Mapster;
@@ -20,7 +21,7 @@ namespace CompanyStructure.Application.Services
             _db = db;
         }
 
-        public async Task<List<GetOrganisationNodeDTO>> GetAllAsync(int? parentId = null)
+        /*public async Task<List<GetOrganisationNodeDTO>> GetAllAsync(int? parentId = null)
         {
             var query = _db.Set<T>().AsQueryable();
 
@@ -40,7 +41,7 @@ namespace CompanyStructure.Application.Services
             var entities = await query.ToListAsync();
 
             return entities.Adapt<List<GetOrganisationNodeDTO>>();
-        }
+        }*/
 
         public async Task<GetOrganisationNodeDTO?> GetByIdAsync(int id)
         {
@@ -52,7 +53,7 @@ namespace CompanyStructure.Application.Services
             return node.Adapt<GetOrganisationNodeDTO>();
         }
 
-        public async Task<ServiceResult<GetOrganisationNodeDTO>> CreateAsync( CreateOrganisationNodeDTO dto, int? parentId = null)
+        /*public async Task<ServiceResult<GetOrganisationNodeDTO>> CreateAsync( CreateOrganisationNodeDTO dto, int? parentId = null)
         {
             var node = dto.Adapt<T>();
 
@@ -70,19 +71,44 @@ namespace CompanyStructure.Application.Services
             await _db.SaveChangesAsync();
 
             return ServiceResult<GetOrganisationNodeDTO>.Ok(node.Adapt<GetOrganisationNodeDTO>());
-        }
+        }*/
 
         public async Task<ServiceResult<GetOrganisationNodeDTO>> UpdateAsync(int id, UpdateOrganisationNodeDTO dto)
         {
-            var existingNode = await _db.Set<T>().FindAsync(id);
-            if (existingNode == null)
+            var node = await _db.Set<T>().FindAsync(id);
+
+            if (node == null)
+                return ServiceResult<GetOrganisationNodeDTO>.Fail(
+                    "Node not found.",
+                    ServiceErrorType.NotFound);
+
+            /*if (dto.LeaderId != null)
             {
-                return ServiceResult<GetOrganisationNodeDTO>.Fail("Node not found", ServiceErrorType.NotFound);
+                var leaderValid = await _db.Employees.AnyAsync(e =>
+                    e.Id == dto.LeaderId.Value &&
+                    e.CompanyId == node.CompanyId);
+
+                if (!leaderValid)
+                    return ServiceResult<GetOrganisationNodeDTO>.Fail(
+                        "Leader must be an employee of the same company.",
+                        ServiceErrorType.Validation);
             }
-            var updatedNode = dto.Adapt(existingNode);
-            _db.Entry(existingNode).CurrentValues.SetValues(updatedNode);
+
+            var codeExists = await _db.Set<T>().AnyAsync(x =>
+                x.CompanyId == node.CompanyId &&
+                x.Code == dto.Code &&
+                x.Id != id);
+
+            if (codeExists)
+                return ServiceResult<GetOrganisationNodeDTO>.Fail(
+                    "Code already exists in this company.",
+                    ServiceErrorType.Conflict);*/
+
+
+            var updatedNode = dto.Adapt(node);
+            _db.Entry(node).CurrentValues.SetValues(updatedNode);
             await _db.SaveChangesAsync();
-            return ServiceResult<GetOrganisationNodeDTO>.Ok(existingNode.Adapt<GetOrganisationNodeDTO>());
+            return ServiceResult<GetOrganisationNodeDTO>.Ok(node.Adapt<GetOrganisationNodeDTO>());
         }
 
         public async Task<ServiceResult<bool>> DeleteAsync(int id)

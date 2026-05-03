@@ -9,6 +9,7 @@ namespace CompanyStructure.Domain.Models
         public required string Name { get; set; }
         [MaxLength(50)]
         public required string Code { get; set; }
+        public required int CompanyId { get; set; }
         public int? LeaderId { get; set; }
         public Employee? Leader { get; set; }
 

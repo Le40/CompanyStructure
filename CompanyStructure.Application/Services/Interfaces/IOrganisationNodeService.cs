@@ -4,13 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompanyStructure.Application.Services
+namespace CompanyStructure.Application.Services.Interfaces
 {
     public interface IOrganisationNodeService<T> where T : class, IOrganizationNode
     {
-        Task<List<GetOrganisationNodeDTO>> GetAllAsync(int? parentId = null);
+        //Task<List<GetOrganisationNodeDTO>> GetAllAsync(int? parentId = null);
         Task<GetOrganisationNodeDTO?> GetByIdAsync(int id);
-        Task<ServiceResult<GetOrganisationNodeDTO>> CreateAsync(CreateOrganisationNodeDTO dto, int? parentId = null);
+        //Task<ServiceResult<GetOrganisationNodeDTO>> CreateAsync(CreateOrganisationNodeDTO dto, int? parentId = null);
         Task<ServiceResult<GetOrganisationNodeDTO>> UpdateAsync(int id, UpdateOrganisationNodeDTO dto);
         Task<ServiceResult<bool>> DeleteAsync(int id);
     }

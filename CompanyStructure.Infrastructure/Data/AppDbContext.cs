@@ -33,6 +33,9 @@ namespace CompanyStructure.Infrastructure.Data
                 .WithOne(d => d.Company)
                 .HasForeignKey(d => d.CompanyId)
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Employee>()
+                .HasIndex(e => e.Email)
+                .IsUnique();
         }
     }
 }

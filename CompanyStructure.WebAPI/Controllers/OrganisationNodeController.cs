@@ -1,5 +1,5 @@
 ﻿using CompanyStructure.Application.DTOs.OrganisationNodes;
-using CompanyStructure.Application.Services;
+using CompanyStructure.Application.Services.Interfaces;
 using CompanyStructure.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
