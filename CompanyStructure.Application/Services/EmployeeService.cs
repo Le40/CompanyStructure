@@ -47,7 +47,7 @@ namespace CompanyStructure.Application.Services
             var companyExists = await _db.Companies.AnyAsync(c => c.Id == dto.CompanyId);
             if (!companyExists)
             {
-                return ServiceResult<GetEmployeeDTO>.Fail("Company does not exist.");
+                return ServiceResult<GetEmployeeDTO>.Fail("Company does not exist.", ServiceErrorType.NotFound);
             }
 
             var employee = dto.Adapt<Employee>();
@@ -62,7 +62,7 @@ namespace CompanyStructure.Application.Services
             var employee = await _db.Employees.FindAsync(id);
             if (employee == null)
             {
-                return ServiceResult<GetEmployeeDTO>.Fail("Employee not found.");
+                return ServiceResult<GetEmployeeDTO>.Fail("Employee not found.", ServiceErrorType.NotFound);
             }
 
             employee = dto.Adapt(employee);
@@ -77,7 +77,7 @@ namespace CompanyStructure.Application.Services
             var employee = await _db.Employees.FindAsync(id);
             if (employee == null)
             {
-                return ServiceResult<bool>.Fail("Employee not found.");
+                return ServiceResult<bool>.Fail("Employee not found.", ServiceErrorType.NotFound);
             }
             _db.Employees.Remove(employee);
             await _db.SaveChangesAsync();

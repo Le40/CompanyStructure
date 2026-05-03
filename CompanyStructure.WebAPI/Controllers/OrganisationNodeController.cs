@@ -1,4 +1,5 @@
-﻿using CompanyStructure.Application.Services;
+﻿using CompanyStructure.Application.DTOs.OrganisationNodes;
+using CompanyStructure.Application.Services;
 using CompanyStructure.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CompanyStructure.WebAPI.Controllers
 {
     [ApiController]
+    [Route("api/[controller]")]
     public abstract class OrganisationNodeController<TEntity> : ControllerBase
         where TEntity : class, IOrganizationNode
     {
@@ -16,11 +18,11 @@ namespace CompanyStructure.WebAPI.Controllers
             _service = service;
         }
 
-        [HttpGet]
+        /*[HttpGet]
         public async Task<IActionResult> GetAll()
         {
             return Ok(await _service.GetAllAsync());
-        }
+        }*/
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -32,19 +34,20 @@ namespace CompanyStructure.WebAPI.Controllers
             }
             return Ok(entity);
         }
+            
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] TEntity entity)
+        /*[HttpPost]
+        public async Task<IActionResult> Create(CreateOrganisationNodeDTO dto)
         {
-            var createdEntity = await _service.CreateAsync(entity);
+            var createdEntity = await _service.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = createdEntity.Id }, createdEntity);
-        }
+        }*/
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] TEntity entity)
+        public async Task<IActionResult> Update(int id, UpdateOrganisationNodeDTO dto)
         {
-            var updatedEntity = await _service.UpdateAsync(id, entity);
-            if (updatedEntity == null)
+            var updatedEntity = await _service.UpdateAsync(id, dto);
+            if (!updatedEntity.Success)
             {
                 return NotFound();
             }

@@ -1,6 +1,5 @@
 ﻿using CompanyStructure.Application.DTOs.Employees;
 using CompanyStructure.Application.Services;
-using CompanyStructure.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyStructure.WebAPI.Controllers
