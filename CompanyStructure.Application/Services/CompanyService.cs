@@ -52,21 +52,21 @@ namespace CompanyStructure.Application.Services
                 company.Adapt<GetOrganisationNodeDTO>());
         }
             
-        public async Task<List<GetOrganisationNodeDTO>> GetAllAsync()
+        public async Task<ServiceResult<List<GetOrganisationNodeDTO>>> GetAllAsync()
         {
             var companies = await _db.Companies.ToListAsync();
                 
-            return companies.Adapt<List<GetOrganisationNodeDTO>>();
+            return ServiceResult<List<GetOrganisationNodeDTO>>.Ok(companies.Adapt<List<GetOrganisationNodeDTO>>());
         }
 
-        public async Task<GetOrganisationNodeDTO?> GetByIdAsync(int id)
+        public async Task<ServiceResult<GetOrganisationNodeDTO?>> GetByIdAsync(int id)
         {
             var node = await _db.Companies.FindAsync(id);
             if (node == null)
             {
-                return null;
+                return ServiceResult<GetOrganisationNodeDTO?>.Fail("Node not found", ServiceErrorType.NotFound);
             }
-            return node.Adapt<GetOrganisationNodeDTO>();
+            return ServiceResult<GetOrganisationNodeDTO?>.Ok(node.Adapt<GetOrganisationNodeDTO>());
         }
 
 

@@ -46,38 +46,6 @@ namespace CompanyStructure.Application.Services
                     codeValidation.Error!,
                     codeValidation.ErrorType!.Value);
 
-
-
-            /*var codeExists = await _db.Departments
-                .AnyAsync(d => d.CompanyId == companyId && d.Code == dto.Code);
-
-            if (codeExists)
-            {
-                return ServiceResult<GetOrganisationNodeDTO>.Fail(
-                    "Division with this code already exists in this company.",
-                    ServiceErrorType.Conflict);
-            }
-
-            var companyId = await _db.Projects
-                .Where(p => p.Id == projectId)
-                .Select(p => p.CompanyId)
-                .FirstOrDefaultAsync();
-
-            if (dto.LeaderId != null)
-            {
-                var leaderValid = await _db.Employees
-                    .AnyAsync(e =>
-                        e.Id == dto.LeaderId.Value &&
-                        e.CompanyId == companyId);
-
-                if (!leaderValid)
-                {
-                    return ServiceResult<GetOrganisationNodeDTO>.Fail(
-                        "Leader must be an employee of the same company.",
-                        ServiceErrorType.Validation);
-                }
-            }*/
-
             var department = dto.Adapt<Department>();
             department.ProjectId = projectId;
 
@@ -88,10 +56,10 @@ namespace CompanyStructure.Application.Services
                 department.Adapt<GetOrganisationNodeDTO>());
         }
 
-        public async Task<List<GetOrganisationNodeDTO>> GetAllAsync(int projectId)
+        public async Task<ServiceResult<List<GetOrganisationNodeDTO>>> GetAllAsync(int projectId)
         {
             var departments = await _db.Departments.Where(d => d.ProjectId == projectId).ToListAsync();
-            return departments.Adapt<List<GetOrganisationNodeDTO>>();
+            return ServiceResult<List<GetOrganisationNodeDTO>>.Ok(departments.Adapt<List<GetOrganisationNodeDTO>>());
         }
     }
 }

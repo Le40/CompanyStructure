@@ -52,14 +52,14 @@ namespace CompanyStructure.Application.Services
                 division.Adapt<GetOrganisationNodeDTO>());
         }
 
-        public async Task<List<GetOrganisationNodeDTO>> GetAllAsync(int companyId)
+        public async Task<ServiceResult<List<GetOrganisationNodeDTO>>> GetAllAsync(int companyId)
         {
             var query = _db.Divisions.AsQueryable();
 
             query = query.Where(d => d.CompanyId == companyId);
 
             var entities = await query.ToListAsync();
-            return entities.Adapt<List<GetOrganisationNodeDTO>>();
+            return ServiceResult<List<GetOrganisationNodeDTO>>.Ok(entities.Adapt<List<GetOrganisationNodeDTO>>());
         }
     }
 }
