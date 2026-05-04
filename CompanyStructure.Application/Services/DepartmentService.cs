@@ -1,22 +1,20 @@
 ﻿using CompanyStructure.Application.DTOs.OrganisationNodes;
 using CompanyStructure.Application.Services.Interfaces;
+using CompanyStructure.Application.Services.Validation;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CompanyStructure.Application.Services
 {
-    public class DepartmentService : IDepartmentService
+    public class DepartmentService : OrganisationNodeService<Department>, IDepartmentService
     {
-        private readonly AppDbContext _db;
-
-        public DepartmentService(AppDbContext db)
+        public DepartmentService(   
+            AppDbContext db,
+            IOrganisationNodeValidationService validation)
+            : base(db, validation)
         {
-            _db = db;
         }
         public async Task<ServiceResult<GetOrganisationNodeDTO>> CreateAsync(CreateOrganisationNodeDTO dto, int projectId)
         {
@@ -34,7 +32,23 @@ namespace CompanyStructure.Application.Services
                 .Select(p => p.CompanyId)
                 .FirstOrDefaultAsync();
 
-            var codeExists = await _db.Departments
+            var leaderValidation = await _validation.ValidateLeaderAsync(dto.LeaderId, companyId);
+
+            if (!leaderValidation.Success)
+                return ServiceResult<GetOrganisationNodeDTO>.Fail(
+                    leaderValidation.Error!,
+                    leaderValidation.ErrorType!.Value);
+
+            var codeValidation = await _validation.ValidateCodeIsUniqueAsync<Department>(dto.Code!, companyId);
+
+            if (!codeValidation.Success)
+                return ServiceResult<GetOrganisationNodeDTO>.Fail(
+                    codeValidation.Error!,
+                    codeValidation.ErrorType!.Value);
+
+
+
+            /*var codeExists = await _db.Departments
                 .AnyAsync(d => d.CompanyId == companyId && d.Code == dto.Code);
 
             if (codeExists)
@@ -62,7 +76,7 @@ namespace CompanyStructure.Application.Services
                         "Leader must be an employee of the same company.",
                         ServiceErrorType.Validation);
                 }
-            }
+            }*/
 
             var department = dto.Adapt<Department>();
             department.ProjectId = projectId;

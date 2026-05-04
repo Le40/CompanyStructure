@@ -1,6 +1,7 @@
 ﻿using CompanyStructure.Application.DTOs.Employees;
 using CompanyStructure.Application.DTOs.OrganisationNodes;
 using CompanyStructure.Application.Services.Interfaces;
+using CompanyStructure.Application.Services.Validation;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
 using Mapster;
@@ -8,17 +9,20 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace CompanyStructure.Application.Services
 {
-    public class OrganizationNodeService<T> : IOrganisationNodeService<T> 
-        where T : class, IOrganizationNode
+    public class OrganisationNodeService<T> : IOrganisationNodeService<T> 
+        where T : class, IOrganisationNode
     {
-        private readonly AppDbContext _db;
+        protected readonly AppDbContext _db;
+        protected readonly IOrganisationNodeValidationService _validation;
 
-        public OrganizationNodeService(AppDbContext db)
+        public OrganisationNodeService(AppDbContext db, IOrganisationNodeValidationService validation)
         {
             _db = db;
+            _validation = validation;
         }
 
         /*public async Task<List<GetOrganisationNodeDTO>> GetAllAsync(int? parentId = null)
@@ -82,28 +86,22 @@ namespace CompanyStructure.Application.Services
                     "Node not found.",
                     ServiceErrorType.NotFound);
 
-            /*if (dto.LeaderId != null)
-            {
-                var leaderValid = await _db.Employees.AnyAsync(e =>
-                    e.Id == dto.LeaderId.Value &&
-                    e.CompanyId == node.CompanyId);
+            var codeValidation = await _validation.ValidateCodeIsUniqueAsync<T>(
+                dto.Code!,
+                node.CompanyId,
+                excludeId: id);
 
-                if (!leaderValid)
-                    return ServiceResult<GetOrganisationNodeDTO>.Fail(
-                        "Leader must be an employee of the same company.",
-                        ServiceErrorType.Validation);
-            }
-
-            var codeExists = await _db.Set<T>().AnyAsync(x =>
-                x.CompanyId == node.CompanyId &&
-                x.Code == dto.Code &&
-                x.Id != id);
-
-            if (codeExists)
+            if (!codeValidation.Success)
                 return ServiceResult<GetOrganisationNodeDTO>.Fail(
-                    "Code already exists in this company.",
-                    ServiceErrorType.Conflict);*/
+                    codeValidation.Error!,
+                    codeValidation.ErrorType!.Value);
 
+            var leaderValidation = await _validation.ValidateLeaderAsync(dto.LeaderId, node.CompanyId);
+
+            if (!leaderValidation.Success)
+                return ServiceResult<GetOrganisationNodeDTO>.Fail(
+                    leaderValidation.Error!,
+                    leaderValidation.ErrorType!.Value);
 
             var updatedNode = dto.Adapt(node);
             _db.Entry(node).CurrentValues.SetValues(updatedNode);

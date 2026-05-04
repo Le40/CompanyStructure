@@ -1,7 +1,9 @@
 ﻿using CompanyStructure.Application.DTOs.OrganisationNodes;
 using CompanyStructure.Application.Services.Interfaces;
 using CompanyStructure.Domain.Models;
+using CompanyStructure.WebAPI.Controllers.Helpers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyStructure.WebAPI.Controllers
@@ -19,8 +21,8 @@ namespace CompanyStructure.WebAPI.Controllers
         [HttpGet("/api/projects/{projectId}/[controller]")]
         public async Task<IActionResult> GetAll(int projectId)
         {
-            var departments = await _departmentsService.GetAllAsync(projectId);
-            return Ok(departments);
+            var result = await _departmentsService.GetAllAsync(projectId);
+            return result.ToActionResult(this);
         }
             
         [HttpPost("/api/projects/{projectId}/[controller]")]
@@ -29,10 +31,10 @@ namespace CompanyStructure.WebAPI.Controllers
             var result = await _departmentsService.CreateAsync(dto, projectId);
             if (!result.Success)
             {
-                return BadRequest(new { error = result.Error });
+                return result.ToActionResult(this);
             }
 
-            return CreatedAtAction(nameof(GetById), new { id = result.Data.Id }, result.Data);
+            return CreatedAtAction(nameof(GetById), new { id = result.Data!.Id }, result.Data);
         }
     }
 }

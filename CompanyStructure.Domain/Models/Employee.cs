@@ -7,7 +7,7 @@ namespace CompanyStructure.Domain.Models
         public int Id { get; set; }
 
         public int CompanyId { get; set; }
-        public Company? Company { get; set; } = null;
+        public Company? Company { get; set; }
 
         [MaxLength(25)]
         public string? Degree { get; set; }

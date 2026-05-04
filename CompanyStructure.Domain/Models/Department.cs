@@ -2,7 +2,7 @@
 
 namespace CompanyStructure.Domain.Models
 {
-    public class Department : IOrganizationNode
+    public class Department : IOrganisationNode
     {
         public int Id { get; set; }
         [MaxLength(100)]

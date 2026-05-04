@@ -1,22 +1,20 @@
 ﻿using CompanyStructure.Application.DTOs.OrganisationNodes;
 using CompanyStructure.Application.Services.Interfaces;
+using CompanyStructure.Application.Services.Validation;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CompanyStructure.Application.Services
 {
-    public class DivisionService : IDivisionService
+    public class DivisionService : OrganisationNodeService<Division>, IDivisionService
     {
-        private readonly AppDbContext _db;
-
-        public DivisionService(AppDbContext db)
-        {
-            _db = db;
+        public DivisionService(
+            AppDbContext db, 
+            IOrganisationNodeValidationService validation) 
+            : base(db, validation) 
+        { 
         }
         public async Task<ServiceResult<GetOrganisationNodeDTO>> CreateAsync(CreateOrganisationNodeDTO dto, int companyId)
         {
@@ -30,30 +28,19 @@ namespace CompanyStructure.Application.Services
                     ServiceErrorType.NotFound);
             }
 
-            var codeExists = await _db.Divisions
-                .AnyAsync(d => d.CompanyId == companyId && d.Code == dto.Code);
+            var leaderValidation = await _validation.ValidateLeaderAsync(dto.LeaderId, companyId);
 
-            if (codeExists)
-            {
+            if (!leaderValidation.Success)
                 return ServiceResult<GetOrganisationNodeDTO>.Fail(
-                    "Division with this code already exists in this company.",
-                    ServiceErrorType.Conflict);
-            }
+                    leaderValidation.Error!,
+                    leaderValidation.ErrorType!.Value);
 
-            if (dto.LeaderId != null)
-            {
-                var leaderValid = await _db.Employees
-                    .AnyAsync(e =>
-                        e.Id == dto.LeaderId.Value &&
-                        e.CompanyId == companyId);
+            var codeValidation = await _validation.ValidateCodeIsUniqueAsync<Division>(dto.Code!,companyId);
 
-                if (!leaderValid)
-                {
-                    return ServiceResult<GetOrganisationNodeDTO>.Fail(
-                        "Leader must be an employee of the same company.",
-                        ServiceErrorType.Validation);
-                }
-            }
+            if (!codeValidation.Success)
+                return ServiceResult<GetOrganisationNodeDTO>.Fail(
+                    codeValidation.Error!,
+                    codeValidation.ErrorType!.Value);
 
             var division = dto.Adapt<Division>();
             division.CompanyId = companyId;

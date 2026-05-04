@@ -1,6 +1,7 @@
 ﻿using CompanyStructure.Application.DTOs.OrganisationNodes;
 using CompanyStructure.Application.Services.Interfaces;
 using CompanyStructure.Domain.Models;
+using CompanyStructure.WebAPI.Controllers.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,7 +10,7 @@ namespace CompanyStructure.WebAPI.Controllers
     [ApiController]
     [Route("api/[controller]")]
     public abstract class OrganisationNodeController<TEntity> : ControllerBase
-        where TEntity : class, IOrganizationNode
+        where TEntity : class, IOrganisationNode
     {
         protected readonly IOrganisationNodeService<TEntity> _service;
 
@@ -27,12 +28,8 @@ namespace CompanyStructure.WebAPI.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var entity = await _service.GetByIdAsync(id);
-            if (entity == null)
-            {
-                return NotFound();
-            }
-            return Ok(entity);
+            var result = await _service.GetByIdAsync(id);
+            return result.ToActionResult(this);
         }
             
 
@@ -46,19 +43,15 @@ namespace CompanyStructure.WebAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdateOrganisationNodeDTO dto)
         {
-            var updatedEntity = await _service.UpdateAsync(id, dto);
-            if (!updatedEntity.Success)
-            {
-                return NotFound();
-            }
-            return Ok(updatedEntity);
+            var result = await _service.UpdateAsync(id, dto);
+            return result.ToActionResult(this);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _service.DeleteAsync(id);
-            return NoContent();
+            var result = await _service.DeleteAsync(id);
+            return result.ToActionResult(this);
         }
     }
 }

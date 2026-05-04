@@ -7,7 +7,7 @@ namespace CompanyStructure.Application.Services.Interfaces
 {
     public interface IDivisionService
     {
-        Task<List<GetOrganisationNodeDTO>> GetAllAsync(int companyId);
+        Task<ServiceResult<List<GetOrganisationNodeDTO>>> GetAllAsync(int companyId);
         Task<ServiceResult<GetOrganisationNodeDTO>> CreateAsync(CreateOrganisationNodeDTO dto, int companyId);
     }
 }
