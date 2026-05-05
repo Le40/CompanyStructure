@@ -5,14 +5,10 @@ using CompanyStructure.Application.Services.Validation;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
 using Mapster;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace CompanyStructure.Application.Services
 {
+    // Base service for organisation nodes (Division, Project, Department), contains common methods for getting by id, updating and deleting nodes.
     public class OrganisationNodeService<T> : IOrganisationNodeService<T> 
         where T : class, IOrganisationNode
     {
@@ -25,28 +21,6 @@ namespace CompanyStructure.Application.Services
             _validation = validation;
         }
 
-        /*public async Task<List<GetOrganisationNodeDTO>> GetAllAsync(int? parentId = null)
-        {
-            var query = _db.Set<T>().AsQueryable();
-
-            if (typeof(T) == typeof(Division) && parentId != null)
-            {
-                query = query.Where(x => ((Division)(object)x).CompanyId == parentId);
-            }
-            else if (typeof(T) == typeof(Project) && parentId != null)
-            {
-                query = query.Where(x => ((Project)(object)x).DivisionId == parentId);
-            }
-            else if (typeof(T) == typeof(Department) && parentId != null)
-            {
-                query = query.Where(x => ((Department)(object)x).ProjectId == parentId);
-            }
-
-            var entities = await query.ToListAsync();
-
-            return entities.Adapt<List<GetOrganisationNodeDTO>>();
-        }*/
-
         public async Task<ServiceResult<GetOrganisationNodeDTO?>> GetByIdAsync(int id)
         {
             var node = await _db.Set<T>().FindAsync(id);
@@ -56,26 +30,6 @@ namespace CompanyStructure.Application.Services
             }
             return ServiceResult<GetOrganisationNodeDTO?>.Ok(node.Adapt<GetOrganisationNodeDTO>());
         }
-
-        /*public async Task<ServiceResult<GetOrganisationNodeDTO>> CreateAsync( CreateOrganisationNodeDTO dto, int? parentId = null)
-        {
-            var node = dto.Adapt<T>();
-
-            var parentValidation = await ValidateAndSetParentNodeAsync(node, parentId);
-            if (!parentValidation.Success)
-            {
-                return ServiceResult<GetOrganisationNodeDTO>.Fail(
-                    parentValidation.Error!,
-                    parentValidation.ErrorType ?? ServiceErrorType.Validation
-                );
-            }
-
-
-            _db.Set<T>().Add(node);
-            await _db.SaveChangesAsync();
-
-            return ServiceResult<GetOrganisationNodeDTO>.Ok(node.Adapt<GetOrganisationNodeDTO>());
-        }*/
 
         public async Task<ServiceResult<GetOrganisationNodeDTO>> UpdateAsync(int id, UpdateOrganisationNodeDTO dto)
         {

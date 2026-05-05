@@ -12,45 +12,31 @@ namespace CompanyStructure.WebAPI.Controllers
     public abstract class OrganisationNodeController<TEntity> : ControllerBase
         where TEntity : class, IOrganisationNode
     {
-        protected readonly IOrganisationNodeService<TEntity> _service;
+        protected readonly IOrganisationNodeService<TEntity> _nodeService;
 
-        protected OrganisationNodeController(IOrganisationNodeService<TEntity> service)
+        protected OrganisationNodeController(IOrganisationNodeService<TEntity> nodeService)
         {
-            _service = service;
+            _nodeService = nodeService;
         }
-
-        /*[HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            return Ok(await _service.GetAllAsync());
-        }*/
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var result = await _service.GetByIdAsync(id);
+            var result = await _nodeService.GetByIdAsync(id);
             return result.ToActionResult(this);
         }
-            
-
-        /*[HttpPost]
-        public async Task<IActionResult> Create(CreateOrganisationNodeDTO dto)
-        {
-            var createdEntity = await _service.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = createdEntity.Id }, createdEntity);
-        }*/
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdateOrganisationNodeDTO dto)
         {
-            var result = await _service.UpdateAsync(id, dto);
+            var result = await _nodeService.UpdateAsync(id, dto);
             return result.ToActionResult(this);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var result = await _service.DeleteAsync(id);
+            var result = await _nodeService.DeleteAsync(id);
             return result.ToActionResult(this);
         }
     }

@@ -57,10 +57,10 @@ namespace CompanyStructure.Application.Services
                 project.Adapt<GetOrganisationNodeDTO>());
         }
 
-        public async Task<List<GetOrganisationNodeDTO>> GetAllAsync(int divisionId)
+        public async Task<ServiceResult<List<GetOrganisationNodeDTO>>> GetAllAsync(int divisionId)
         {
             var projects = await _db.Projects.Where(d => d.DivisionId == divisionId).ToListAsync();
-            return projects.Adapt<List<GetOrganisationNodeDTO>>();
+            return ServiceResult<List<GetOrganisationNodeDTO>>.Ok(projects.Adapt<List<GetOrganisationNodeDTO>>());
         }
     }
 }

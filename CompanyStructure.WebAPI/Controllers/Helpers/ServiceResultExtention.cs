@@ -6,8 +6,8 @@ namespace CompanyStructure.WebAPI.Controllers.Helpers
     public static class ServiceResultExtention
     {
         public static IActionResult ToActionResult<T>(
-        this ServiceResult<T> result,
-        ControllerBase controller)
+            this ServiceResult<T> result,
+            ControllerBase controller)
         {
             if (result.Success)
                 return controller.Ok(result.Data);
@@ -20,8 +20,7 @@ namespace CompanyStructure.WebAPI.Controllers.Helpers
                 ServiceErrorType.Conflict =>
                     controller.Conflict(new { message = result.Error }),
 
-                _ =>
-                    controller.BadRequest(new { message = result.Error })
+                _ => controller.BadRequest(new { message = result.Error })
             };
         }
     }

@@ -9,31 +9,30 @@ namespace CompanyStructure.WebAPI.Controllers
 {
     public class DivisionsController : OrganisationNodeController<Division>
     {
-        private readonly IDivisionService _divisionService;
+        private readonly IDivisionService _service;
         public DivisionsController(
-            IOrganisationNodeService<Division> service,
-            IDivisionService divisionService) : base(service)
+            IDivisionService service) : base(service)
         {
-            _divisionService = divisionService;
+            _service = service;
         }
 
         [HttpGet("/api/companies/{companyId}/[controller]")]
         public async Task<IActionResult> GetAll(int companyId)
         {
-            var result = await _divisionService.GetAllAsync(companyId);
+            var result = await _service.GetAllAsync(companyId);
             return result.ToActionResult(this);
         }
 
         [HttpPost("/api/companies/{companyId}/[controller]")]
         public async Task<IActionResult> Create(CreateOrganisationNodeDTO dto, int companyId)
         {
-            var result = await _divisionService.CreateAsync(dto, companyId);
+            var result = await _service.CreateAsync(dto, companyId);
             if (!result.Success)
             {
                 return result.ToActionResult(this);
             }
 
-            return CreatedAtAction(nameof(GetById), new { id = result.Data.Id }, result.Data);
+            return CreatedAtAction(nameof(GetById), new { id = result.Data!.Id }, result.Data);
         }
     }
 }

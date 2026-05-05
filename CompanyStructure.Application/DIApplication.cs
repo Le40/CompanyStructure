@@ -11,7 +11,7 @@ namespace CompanyStructure.Application
         {
             // Register application services here
             services.AddScoped<IEmployeeService, EmployeeService>();
-            services.AddScoped(typeof(IOrganisationNodeService<>), typeof(OrganisationNodeService<>));
+            //services.AddScoped(typeof(IOrganisationNodeService<>), typeof(OrganisationNodeService<>));
             services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<IDivisionService, DivisionService>();
             services.AddScoped<IProjectService, ProjectService>();

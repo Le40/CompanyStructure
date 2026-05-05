@@ -10,12 +10,12 @@ namespace CompanyStructure.Application.DTOs.OrganisationNodes
     {
         [Required(ErrorMessage = "Name is required.")]
         [MaxLength(100)]
-        public string? Name { get; set; }
+        public required string Name { get; set; }
 
         [Required(ErrorMessage = "Code is required.")]
         [MaxLength(30)]
-        public string? Code { get; set; }
+        public required string Code { get; set; }
 
-        public int? LeaderId { get; set; }
+        public int? LeaderId { get; set; } = null;
     }
 }
