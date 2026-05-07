@@ -1,0 +1,298 @@
+### 01 - Create company
+## TEST-EXPECT-STATUS: [201]
+POST {{baseUrl}}/api/companies
+Content-Type: application/json
+
+{
+  "name": "ACME",
+  "code": "ACME"
+}
+
+### 02 - Duplicate company code
+## TEST-EXPECT-STATUS: [409]
+POST {{baseUrl}}/api/companies
+Content-Type: application/json
+
+{
+  "name": "ACME Duplicate",
+  "code": "ACME"
+}
+
+### 03 - Get companies
+## TEST-EXPECT-STATUS: [200]
+GET {{baseUrl}}/api/companies
+
+### 04 - Create employee
+## TEST-EXPECT-STATUS: [201]
+POST {{baseUrl}}/api/companies/1/employees
+Content-Type: application/json
+
+{
+  "degree": "Ing.",
+  "name": "John",
+  "surname": "Doe",
+  "email": "john.doe@acme.com",
+  "phoneNumber": "+421900123456"
+}
+
+### 05 - Duplicate employee email
+## TEST-EXPECT-STATUS: [409]
+POST {{baseUrl}}/api/companies/1/employees
+Content-Type: application/json
+
+{
+  "degree": "Ing.",
+  "name": "Johnny",
+  "surname": "Duplicate",
+  "email": "john.doe@acme.com",
+  "phoneNumber": "+421900999999"
+}
+
+### 06 - Employee for non-existing company
+## TEST-EXPECT-STATUS: [404]
+POST {{baseUrl}}/api/companies/999/employees
+Content-Type: application/json
+
+{
+  "degree": "Mgr.",
+  "name": "Invalid",
+  "surname": "Company",
+  "email": "invalid.company@test.com",
+  "phoneNumber": "+421900000000"
+}
+
+### 07 - Create second company
+## TEST-EXPECT-STATUS: [201]
+POST {{baseUrl}}/api/companies
+Content-Type: application/json
+
+{
+  "name": "OTHER",
+  "code": "OTHER"
+}
+
+### 08 - Create employee in second company
+## TEST-EXPECT-STATUS: [201]
+POST {{baseUrl}}/api/companies/2/employees
+Content-Type: application/json
+
+{
+  "degree": "Bc.",
+  "name": "Other",
+  "surname": "Leader",
+  "email": "other.leader@other.com",
+  "phoneNumber": "+421911111111"
+}
+
+### 09 - Get employees for company
+## TEST-EXPECT-STATUS: [200]
+GET {{baseUrl}}/api/companies/1/employees
+
+### 10 - Create division
+## TEST-EXPECT-STATUS: [201]
+POST {{baseUrl}}/api/companies/1/divisions
+Content-Type: application/json
+
+{
+  "name": "IT Division",
+  "code": "IT",
+  "leaderId": 1
+}
+
+### 11 - Duplicate division code
+## TEST-EXPECT-STATUS: [409]
+POST {{baseUrl}}/api/companies/1/divisions
+Content-Type: application/json
+
+{
+  "name": "IT Duplicate",
+  "code": "IT",
+  "leaderId": 1
+}
+
+### 12 - Division with wrong leader
+## TEST-EXPECT-STATUS: [400]
+POST {{baseUrl}}/api/companies/1/divisions
+Content-Type: application/json
+
+{
+  "name": "Finance Division",
+  "code": "FIN",
+  "leaderId": 2
+}
+
+### 13 - Division for non-existing company
+## TEST-EXPECT-STATUS: [404]
+POST {{baseUrl}}/api/companies/999/divisions
+Content-Type: application/json
+
+{
+  "name": "Invalid Division",
+  "code": "INVALID_DIV"
+}
+
+### 14 - Get divisions
+## TEST-EXPECT-STATUS: [200]
+GET {{baseUrl}}/api/companies/1/divisions
+
+### 15 - Create project
+## TEST-EXPECT-STATUS: [201]
+POST {{baseUrl}}/api/divisions/1/projects
+Content-Type: application/json
+
+{
+  "name": "Internal System",
+  "code": "INTSYS",
+  "leaderId": 1
+}
+
+### 16 - Duplicate project code
+## TEST-EXPECT-STATUS: [409]
+POST {{baseUrl}}/api/divisions/1/projects
+Content-Type: application/json
+
+{
+  "name": "Duplicate",
+  "code": "INTSYS",
+  "leaderId": 1
+}
+
+### 17 - Project under non-existing division
+## TEST-EXPECT-STATUS: [404]
+POST {{baseUrl}}/api/divisions/999/projects
+Content-Type: application/json
+
+{
+  "name": "Invalid",
+  "code": "INVALID"
+}
+
+### 18 - Project with wrong leader
+## TEST-EXPECT-STATUS: [400]
+POST {{baseUrl}}/api/divisions/1/projects
+Content-Type: application/json
+
+{
+  "name": "Wrong Leader",
+  "code": "WRONG",
+  "leaderId": 2
+}
+
+### 19 - Get projects
+## TEST-EXPECT-STATUS: [200]
+GET {{baseUrl}}/api/divisions/1/projects
+
+### 20 - Create department
+## TEST-EXPECT-STATUS: [201]
+POST {{baseUrl}}/api/projects/1/departments
+Content-Type: application/json
+
+{
+  "name": "Backend",
+  "code": "BACKEND",
+  "leaderId": 1
+}
+
+### 21 - Duplicate department code
+## TEST-EXPECT-STATUS: [409]
+POST {{baseUrl}}/api/projects/1/departments
+Content-Type: application/json
+
+{
+  "name": "Duplicate",
+  "code": "BACKEND"
+}
+
+### 22 - Department under non-existing project
+## TEST-EXPECT-STATUS: [404]
+POST {{baseUrl}}/api/projects/999/departments
+Content-Type: application/json
+
+{
+  "name": "Invalid",
+  "code": "INVALID"
+}
+
+### 23 - Department with wrong leader
+## TEST-EXPECT-STATUS: [400]
+POST {{baseUrl}}/api/projects/1/departments
+Content-Type: application/json
+
+{
+  "name": "Wrong Leader",
+  "code": "WRONG",
+  "leaderId": 2
+}
+
+### 24 - Get departments
+## TEST-EXPECT-STATUS: [200]
+GET {{baseUrl}}/api/projects/1/departments
+
+### 25 - Update employee
+## TEST-EXPECT-STATUS: [200]
+PUT {{baseUrl}}/api/employees/1
+Content-Type: application/json
+
+{
+  "name": "John",
+  "surname": "Updated",
+  "email": "john.updated@acme.com",
+  "phoneNumber": "+421900123456"
+}
+
+### 26 - Update employee duplicate email
+## TEST-EXPECT-STATUS: [409]
+PUT {{baseUrl}}/api/employees/1
+Content-Type: application/json
+
+{
+  "name": "John",
+  "surname": "Updated",
+  "email": "other.leader@other.com",
+  "phoneNumber": "+421900123456"
+}
+
+### 27 - Input validation (empty company)
+## TEST-EXPECT-STATUS: [400]
+POST {{baseUrl}}/api/companies
+Content-Type: application/json
+
+{
+  "name": "",
+  "code": ""
+}
+
+### 28 - Input validation (bad email)
+## TEST-EXPECT-STATUS: [400]
+POST {{baseUrl}}/api/companies/1/employees
+Content-Type: application/json
+
+{
+  "name": "Bad",
+  "surname": "Email",
+  "email": "invalid"
+}
+
+### 29 - Delete department
+## TEST-EXPECT-STATUS: [204]
+DELETE {{baseUrl}}/api/departments/1
+
+### 30 - Delete project
+## TEST-EXPECT-STATUS: [204]
+DELETE {{baseUrl}}/api/projects/1
+
+### 31 - Delete division
+## TEST-EXPECT-STATUS: [204]
+DELETE {{baseUrl}}/api/divisions/1
+
+### 32 - Delete Company
+## TEST-EXPECT-STATUS: [204]
+DELETE {{baseUrl}}/api/companies/1
+
+### 33 - Delete employee
+## TEST-EXPECT-STATUS: [204]
+DELETE {{baseUrl}}/api/employees/2
+
+### 34 - Delete Company
+## TEST-EXPECT-STATUS: [204]
+DELETE {{baseUrl}}/api/companies/2

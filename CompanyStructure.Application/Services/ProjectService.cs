@@ -49,6 +49,7 @@ namespace CompanyStructure.Application.Services
 
             var project = dto.Adapt<Project>();
             project.DivisionId = divisionId;
+            project.CompanyId = companyId;
 
             _db.Projects.Add(project);
             await _db.SaveChangesAsync();

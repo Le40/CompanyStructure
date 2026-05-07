@@ -29,9 +29,7 @@ namespace CompanyStructure.WebAPI.Controllers
         {
             var result = await _service.CreateAsync(dto, projectId);
             if (!result.Success)
-            {
                 return result.ToActionResult(this);
-            }
 
             return CreatedAtAction(nameof(GetById), new { id = result.Data!.Id }, result.Data);
         }

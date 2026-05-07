@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# TeaPie
+**/.teapie/cache/
+**/.teapie/reports/
+**/.teapie/runs/

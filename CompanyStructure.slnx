@@ -5,4 +5,12 @@
     <Project Path="CompanyStructure.Infrastructure/CompanyStructure.Infrastructure.csproj" />
     <Project Path="CompanyStructure.WebAPI/CompanyStructure.WebAPI.csproj" />
   </Folder>
+  <Folder Name="/src/Database/">
+    <File Path="Database/create-database.sql" />
+    <File Path="Database/reset-test-data.sql.sql" />
+  </Folder>
+  <Folder Name="/src/Tests/">
+    <File Path="Tests/company-structure.http" />
+    <File Path="Tests/env.json" />
+  </Folder>
 </Solution>

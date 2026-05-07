@@ -22,9 +22,7 @@ namespace CompanyStructure.WebAPI.Controllers
         {
             var result = await _service.CreateEmployeeAsync(companyId, dto);
             if (!result.Success)
-            {
                 return result.ToActionResult(this);
-            }
 
             return CreatedAtAction(nameof(GetEmployeeById), new { id = result.Data!.Id }, result.Data);
         }
@@ -47,7 +45,10 @@ namespace CompanyStructure.WebAPI.Controllers
         public async Task<IActionResult> DeleteEmployee(int id)
         {
             var result = await _service.DeleteEmployeeAsync(id);
-            return result.ToActionResult(this);
+            if (!result.Success)
+                return result.ToActionResult(this);
+
+            return NoContent();
         }
     }
 }

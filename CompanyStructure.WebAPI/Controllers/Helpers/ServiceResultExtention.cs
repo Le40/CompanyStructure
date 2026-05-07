@@ -11,6 +11,7 @@ namespace CompanyStructure.WebAPI.Controllers.Helpers
         {
             if (result.Success)
                 return controller.Ok(result.Data);
+                //return null;
 
             return result.ErrorType switch
             {
