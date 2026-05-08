@@ -28,7 +28,7 @@ The API supports:
 
 Before running the project, install:
 
-- .NET SDK
+- .NET 10 SDK
 - Microsoft SQL Server / SQL Server Express
 - SQL Server Management Studio
 - TeaPie CLI, optional for running API tests
@@ -42,7 +42,7 @@ dotnet tool install -g TeaPie.Tool
 ## Getting started
 ### 1. Clone repository
 ```powershell
-git clone <your-github-repository-url>
+git clone https://github.com/Le40/CompanyStructure
 cd CompanyStructure
 ```
 ### 2. Configure database connection
@@ -66,7 +66,7 @@ dotnet ef database update --project .\CompanyStructure.Infrastructure --startup-
 ### Option 2: SQL Script
 Open SQL Server Management Studio, connect to SQL Server, open:
 ```
-database/create-database.sql
+Database/create-database.sql
 ```
 Select the correct database/server and execute the script.
 
