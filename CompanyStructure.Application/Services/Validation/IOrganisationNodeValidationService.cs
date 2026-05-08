@@ -1,4 +1,5 @@
-﻿using CompanyStructure.Domain.Models;
+﻿using CompanyStructure.Application.Results;
+using CompanyStructure.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -1,4 +1,5 @@
 ﻿using CompanyStructure.Application.DTOs.OrganisationNodes;
+using CompanyStructure.Application.Results;
 using CompanyStructure.Application.Services.Interfaces;
 using CompanyStructure.Application.Services.Validation;
 using CompanyStructure.Domain.Models;
@@ -27,9 +28,7 @@ namespace CompanyStructure.Application.Services
             if (!divisionExists)
             {
                 _logger.LogWarning("Division with id {DivisionId} does not exist", divisionId);
-                return ServiceResult<GetOrganisationNodeDTO>.Fail(
-                    "Division does not exist.",
-                    ServiceErrorType.NotFound);
+                return ServiceResult<GetOrganisationNodeDTO>.Fail(ServiceErrors.NotFound<Division>());
             }
 
             var companyId = await _db.Divisions
@@ -40,16 +39,12 @@ namespace CompanyStructure.Application.Services
             var leaderValidation = await _validation.ValidateLeaderAsync(dto.LeaderId, companyId);
 
             if (!leaderValidation.Success)
-                return ServiceResult<GetOrganisationNodeDTO>.Fail(
-                    leaderValidation.Error!,
-                    leaderValidation.ErrorType!.Value);
+                return ServiceResult<GetOrganisationNodeDTO>.Fail(leaderValidation.Error!);
 
             var codeValidation = await _validation.ValidateCodeIsUniqueAsync<Project>(dto.Code!, companyId);
 
             if (!codeValidation.Success)
-                return ServiceResult<GetOrganisationNodeDTO>.Fail(
-                    codeValidation.Error!,
-                    codeValidation.ErrorType!.Value);
+                return ServiceResult<GetOrganisationNodeDTO>.Fail(codeValidation.Error!);
 
             var project = dto.Adapt<Project>();
             project.DivisionId = divisionId;
@@ -65,6 +60,10 @@ namespace CompanyStructure.Application.Services
 
         public async Task<ServiceResult<List<GetOrganisationNodeDTO>>> GetAllAsync(int divisionId)
         {
+            var nodeExists = await _db.Divisions.AnyAsync(n => n.Id == divisionId);
+            if (!nodeExists)  
+                return ServiceResult<List<GetOrganisationNodeDTO>>.Fail(ServiceErrors.NotFound<Division>());
+
             var projects = await _db.Projects.Where(d => d.DivisionId == divisionId).ToListAsync();
             return ServiceResult<List<GetOrganisationNodeDTO>>.Ok(projects.Adapt<List<GetOrganisationNodeDTO>>());
         }

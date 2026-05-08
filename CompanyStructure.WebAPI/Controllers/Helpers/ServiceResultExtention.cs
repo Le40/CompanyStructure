@@ -1,4 +1,4 @@
-﻿using CompanyStructure.Application;
+﻿using CompanyStructure.Application.Results;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyStructure.WebAPI.Controllers.Helpers
@@ -11,17 +11,29 @@ namespace CompanyStructure.WebAPI.Controllers.Helpers
         {
             if (result.Success)
                 return controller.Ok(result.Data);
-                //return null;
 
-            return result.ErrorType switch
+            if (result.Error == null)
+                return controller.StatusCode(500, new { message = "Unknown Error." });
+
+            return result.Error.Type switch
             {
                 ServiceErrorType.NotFound =>
-                    controller.NotFound(new { message = result.Error }),
+                    controller.NotFound(new {code = result.Error.Code,message = result.Error.Message}),
 
                 ServiceErrorType.Conflict =>
-                    controller.Conflict(new { message = result.Error }),
+                    controller.Conflict(new { code = result.Error.Code, message = result.Error.Message }),
 
-                _ => controller.BadRequest(new { message = result.Error })
+                ServiceErrorType.Validation =>
+                    controller.BadRequest(new { code = result.Error.Code, message = result.Error.Message }),
+
+                /*ServiceErrorType.Unauthorized =>
+                    controller.Unauthorized(new { code = result.Error.Code, message = result.Error.Message }),
+
+                ServiceErrorType.Forbidden =>
+                    controller.StatusCode(403, new { code = result.Error.Code, message = result.Error.Message }),*/
+
+                _ =>
+                    controller.BadRequest(new { code = result.Error.Code, message = result.Error.Message }),
             };
         }
     }

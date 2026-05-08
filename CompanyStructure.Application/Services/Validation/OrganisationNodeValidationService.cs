@@ -1,4 +1,5 @@
-﻿using CompanyStructure.Domain.Models;
+﻿using CompanyStructure.Application.Results;
+using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -29,9 +30,7 @@ namespace CompanyStructure.Application.Services.Validation
             if (!leaderValid)
             {
                 _logger.LogWarning("Validation failed for leaderId {LeaderId} in companyId {CompanyId}", leaderId, companyId);
-                return ServiceResult<bool>.Fail(
-                    "Leader must be an employee of the same company.",
-                    ServiceErrorType.Validation);
+                return ServiceResult<bool>.Fail(ServiceErrors.LeaderIsNotEmployee<Company>());
             }
 
             return ServiceResult<bool>.Ok(true);
@@ -70,9 +69,7 @@ namespace CompanyStructure.Application.Services.Validation
             if (exists)
             {
                 _logger.LogWarning("Validation failed for code {Code} in companyId {CompanyId}", code, companyId);
-                return ServiceResult<bool>.Fail(
-                    "Code already exists in this company.",
-                    ServiceErrorType.Conflict);
+                return ServiceResult<bool>.Fail(ServiceErrors.DuplicateCode<T>());
             }
 
             return ServiceResult<bool>.Ok(true);

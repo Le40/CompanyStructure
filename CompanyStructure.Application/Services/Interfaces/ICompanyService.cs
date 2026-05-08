@@ -1,7 +1,5 @@
 ﻿using CompanyStructure.Application.DTOs.OrganisationNodes;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using CompanyStructure.Application.Results;
 
 namespace CompanyStructure.Application.Services.Interfaces
 {

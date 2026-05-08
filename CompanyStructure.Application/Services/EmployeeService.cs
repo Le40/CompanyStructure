@@ -1,4 +1,5 @@
 ﻿using CompanyStructure.Application.DTOs.Employees;
+using CompanyStructure.Application.Results;
 using CompanyStructure.Application.Services.Interfaces;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
@@ -24,7 +25,7 @@ namespace CompanyStructure.Application.Services
             var companyExists = await _db.Companies.AnyAsync(c => c.Id == companyId);
             if (!companyExists)
             {
-                return ServiceResult<List<GetEmployeeDTO>>.Fail("Company does not exist.", ServiceErrorType.NotFound);
+                return ServiceResult<List<GetEmployeeDTO>>.Fail(ServiceErrors.CompanyNotFound);
             }
 
             var employees = await _db.Employees
@@ -43,7 +44,7 @@ namespace CompanyStructure.Application.Services
 
             if (employee == null)
             {
-                return ServiceResult<GetEmployeeDTO?>.Fail("Employee not found.", ServiceErrorType.NotFound);
+                return ServiceResult<GetEmployeeDTO?>.Fail(ServiceErrors.NotFound<Employee>());
             }
 
             return ServiceResult<GetEmployeeDTO?>.Ok(employee.Adapt<GetEmployeeDTO>());
@@ -56,14 +57,14 @@ namespace CompanyStructure.Application.Services
             if (!companyExists)
             {
                 _logger.LogWarning("Company with ID {CompanyId} does not exist.", companyId);
-                return ServiceResult<GetEmployeeDTO>.Fail("Company does not exist.", ServiceErrorType.NotFound);
+                return ServiceResult<GetEmployeeDTO>.Fail(ServiceErrors.NotFound<Company>());
             }
 
             var emailExists = await _db.Employees.AnyAsync(e => e.Email == dto.Email);
             if (emailExists)
             {
                 _logger.LogWarning("Email already exists.");
-                return ServiceResult<GetEmployeeDTO>.Fail("Email already exists.", ServiceErrorType.Conflict);
+                return ServiceResult<GetEmployeeDTO>.Fail(ServiceErrors.EmailAlreadyExists);
             }
 
             var employee = dto.Adapt<Employee>();
@@ -82,14 +83,14 @@ namespace CompanyStructure.Application.Services
             if (employee == null)
             {
                 _logger.LogWarning("Employee with ID {EmployeeId} not found.", id);
-                return ServiceResult<GetEmployeeDTO>.Fail("Employee not found.", ServiceErrorType.NotFound);
+                return ServiceResult<GetEmployeeDTO>.Fail(ServiceErrors.NotFound<Employee>());
             }
 
             var emailExists = await _db.Employees.AnyAsync(e => e.Email == dto.Email && e.Id != id);
             if (emailExists)
             {
                 _logger.LogWarning("Email already exists.");
-                return ServiceResult<GetEmployeeDTO>.Fail("Email already exists.", ServiceErrorType.Conflict);
+                return ServiceResult<GetEmployeeDTO>.Fail(ServiceErrors.EmailAlreadyExists);
             }
 
             dto.Adapt(employee);
@@ -105,7 +106,7 @@ namespace CompanyStructure.Application.Services
             if (employee == null)
             {
                 _logger.LogWarning("Employee with ID {EmployeeId} not found.", id);
-                return ServiceResult<bool>.Fail("Employee not found.", ServiceErrorType.NotFound);
+                return ServiceResult<bool>.Fail(ServiceErrors.NotFound<Employee>());
             }
             _db.Employees.Remove(employee);
             await _db.SaveChangesAsync();

@@ -1,4 +1,5 @@
 ﻿using CompanyStructure.Application.DTOs.OrganisationNodes;
+using CompanyStructure.Application.Results;
 using CompanyStructure.Application.Services.Interfaces;
 using CompanyStructure.Application.Services.Validation;
 using CompanyStructure.Domain.Models;
@@ -27,24 +28,18 @@ namespace CompanyStructure.Application.Services
             if (!companyExists)
             {
                 _logger.LogWarning("Company with id {CompanyId} does not exist", companyId);
-                return ServiceResult<GetOrganisationNodeDTO>.Fail(
-                    "Company does not exist.",
-                    ServiceErrorType.NotFound);
+                return ServiceResult<GetOrganisationNodeDTO>.Fail(ServiceErrors.NotFound<Company>());
             }
 
             var leaderValidation = await _validation.ValidateLeaderAsync(dto.LeaderId, companyId);
 
             if (!leaderValidation.Success)
-                return ServiceResult<GetOrganisationNodeDTO>.Fail(
-                    leaderValidation.Error!,
-                    leaderValidation.ErrorType!.Value);
+                return ServiceResult<GetOrganisationNodeDTO>.Fail(leaderValidation.Error!);
 
             var codeValidation = await _validation.ValidateCodeIsUniqueAsync<Division>(dto.Code!,companyId);
 
             if (!codeValidation.Success)
-                return ServiceResult<GetOrganisationNodeDTO>.Fail(
-                    codeValidation.Error!,
-                    codeValidation.ErrorType!.Value);
+                return ServiceResult<GetOrganisationNodeDTO>.Fail(codeValidation.Error!);
 
             var division = dto.Adapt<Division>();
             division.CompanyId = companyId;
@@ -59,12 +54,12 @@ namespace CompanyStructure.Application.Services
 
         public async Task<ServiceResult<List<GetOrganisationNodeDTO>>> GetAllAsync(int companyId)
         {
-            var query = _db.Divisions.AsQueryable();
+            var nodeExists = await _db.Companies.AnyAsync(n => n.Id == companyId);
+            if (!nodeExists)
+                return ServiceResult<List<GetOrganisationNodeDTO>>.Fail(ServiceErrors.NotFound<Company>());
 
-            query = query.Where(d => d.CompanyId == companyId);
-
-            var entities = await query.ToListAsync();
-            return ServiceResult<List<GetOrganisationNodeDTO>>.Ok(entities.Adapt<List<GetOrganisationNodeDTO>>());
+            var divisions = await _db.Divisions.Where(d => d.CompanyId == companyId).ToListAsync();
+            return ServiceResult<List<GetOrganisationNodeDTO>>.Ok(divisions.Adapt<List<GetOrganisationNodeDTO>>());
         }
     }
 }

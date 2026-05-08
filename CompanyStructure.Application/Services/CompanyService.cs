@@ -1,4 +1,5 @@
 ﻿using CompanyStructure.Application.DTOs.OrganisationNodes;
+using CompanyStructure.Application.Results;
 using CompanyStructure.Application.Services.Interfaces;
 using CompanyStructure.Application.Services.Validation;
 using CompanyStructure.Domain.Models;
@@ -31,17 +32,13 @@ namespace CompanyStructure.Application.Services
             if (codeExists)
             {
                 _logger.LogWarning("Failed to create company. Company with code {Code} already exists.", dto.Code);
-                return ServiceResult<GetOrganisationNodeDTO>.Fail(
-                    "Company with this code already exists.",
-                    ServiceErrorType.Conflict);
+                return ServiceResult<GetOrganisationNodeDTO>.Fail(ServiceErrors.DuplicateCode<Company>());
             }
 
             if (dto.LeaderId != null)
             {
                 _logger.LogWarning("Failed to create company. Company director cannot be assigned when creating a new company.");
-                return ServiceResult<GetOrganisationNodeDTO>.Fail(
-                    "Company director cannot be assigned when creating a new company. Create employees first, then update company leader.",
-                    ServiceErrorType.Validation);
+                return ServiceResult<GetOrganisationNodeDTO>.Fail(ServiceErrors.CompanyLeaderCannotBeAssignedOnCreate);
             }
 
             var company = dto.Adapt<Company>();
@@ -66,7 +63,7 @@ namespace CompanyStructure.Application.Services
             var node = await _db.Companies.FindAsync(id);
             if (node == null)
             {
-                return ServiceResult<GetOrganisationNodeDTO?>.Fail("Node not found", ServiceErrorType.NotFound);
+                return ServiceResult<GetOrganisationNodeDTO?>.Fail(ServiceErrors.NotFound<Company>());
             }
             return ServiceResult<GetOrganisationNodeDTO?>.Ok(node.Adapt<GetOrganisationNodeDTO>());
         }
@@ -79,18 +76,14 @@ namespace CompanyStructure.Application.Services
             if (node == null)
             {
                 _logger.LogWarning("Failed to update company. Company with id {Id} was not found.", id);
-                return ServiceResult<GetOrganisationNodeDTO>.Fail(
-                    "Node not found.",
-                    ServiceErrorType.NotFound);
+                return ServiceResult<GetOrganisationNodeDTO>.Fail(ServiceErrors.NotFound<Company>());
             }
 
             var leaderValidation = await _validation.ValidateLeaderAsync(dto.LeaderId, id);
 
             if (!leaderValidation.Success)
             {
-                return ServiceResult<GetOrganisationNodeDTO>.Fail(
-                    leaderValidation.Error!,
-                    leaderValidation.ErrorType!.Value);
+                return ServiceResult<GetOrganisationNodeDTO>.Fail(leaderValidation.Error!);
             }
             var codeExists = await _db.Companies
                 .AnyAsync(d => d.Code == dto.Code && d.Id != id);
@@ -98,9 +91,7 @@ namespace CompanyStructure.Application.Services
             if (codeExists)
             {
                 _logger.LogWarning("Failed to update company. Company with code {Code} already exists.", dto.Code);
-                return ServiceResult<GetOrganisationNodeDTO>.Fail(
-                    "Company with this code already exists.",
-                    ServiceErrorType.Conflict);
+                return ServiceResult<GetOrganisationNodeDTO>.Fail(ServiceErrors.DuplicateCode<Company>());
             }
 
             dto.Adapt(node);
@@ -115,7 +106,7 @@ namespace CompanyStructure.Application.Services
             var node = await _db.Companies.FindAsync(id);
             if (node == null) {
                 _logger.LogWarning("Failed to delete company. Company with id {Id} was not found.", id);
-                return ServiceResult<bool>.Fail("Node was not found", ServiceErrorType.NotFound);
+                return ServiceResult<bool>.Fail(ServiceErrors.NotFound<Company>());
             }
             _db.Companies.Remove(node);
             await _db.SaveChangesAsync();

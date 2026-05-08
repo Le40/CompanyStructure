@@ -1,5 +1,5 @@
 ﻿using CompanyStructure.Application.DTOs.Employees;
-using CompanyStructure.Domain.Models;
+using CompanyStructure.Application.Results;
 
 namespace CompanyStructure.Application.Services.Interfaces
 {

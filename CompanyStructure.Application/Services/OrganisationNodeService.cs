@@ -1,4 +1,5 @@
 ﻿using CompanyStructure.Application.DTOs.OrganisationNodes;
+using CompanyStructure.Application.Results;
 using CompanyStructure.Application.Services.Interfaces;
 using CompanyStructure.Application.Services.Validation;
 using CompanyStructure.Domain.Models;
@@ -29,7 +30,7 @@ namespace CompanyStructure.Application.Services
             var node = await _db.Set<T>().FindAsync(id);
             if (node == null)
             {
-                return ServiceResult<GetOrganisationNodeDTO?>.Fail("Node not found", ServiceErrorType.NotFound);
+                return ServiceResult<GetOrganisationNodeDTO?>.Fail(ServiceErrors.NotFound<T>());
             }
             return ServiceResult<GetOrganisationNodeDTO?>.Ok(node.Adapt<GetOrganisationNodeDTO>());
         }
@@ -41,9 +42,7 @@ namespace CompanyStructure.Application.Services
             if (node == null)
             {
                 _logger.LogWarning("{NodeType} with id {NodeId} not found for update", _nodeTypeName, id);
-                return ServiceResult<GetOrganisationNodeDTO>.Fail(
-                    "Node not found.",
-                    ServiceErrorType.NotFound);
+                return ServiceResult<GetOrganisationNodeDTO>.Fail(ServiceErrors.NotFound<T>());
             }
             var codeValidation = await _validation.ValidateCodeIsUniqueAsync<T>(
                 dto.Code!,
@@ -51,16 +50,12 @@ namespace CompanyStructure.Application.Services
                 excludeId: id);
 
             if (!codeValidation.Success)
-                return ServiceResult<GetOrganisationNodeDTO>.Fail(
-                    codeValidation.Error!,
-                    codeValidation.ErrorType!.Value);
+                return ServiceResult<GetOrganisationNodeDTO>.Fail(codeValidation.Error!);
 
             var leaderValidation = await _validation.ValidateLeaderAsync(dto.LeaderId, node.CompanyId);
 
             if (!leaderValidation.Success)
-                return ServiceResult<GetOrganisationNodeDTO>.Fail(
-                    leaderValidation.Error!,
-                    leaderValidation.ErrorType!.Value);
+                return ServiceResult<GetOrganisationNodeDTO>.Fail(leaderValidation.Error!);
 
             dto.Adapt(node);
             await _db.SaveChangesAsync();
@@ -75,7 +70,7 @@ namespace CompanyStructure.Application.Services
             if (node == null)
             {
                 _logger.LogWarning("{NodeType} with id {NodeId} not found for deletion", _nodeTypeName, id);
-                return ServiceResult<bool>.Fail("Node was not found", ServiceErrorType.NotFound);
+                return ServiceResult<bool>.Fail(ServiceErrors.NotFound<T>());
             }
             _db.Set<T>().Remove(node);
             await _db.SaveChangesAsync();
