@@ -5,6 +5,7 @@ using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace CompanyStructure.Application.Services
 {
@@ -12,16 +13,19 @@ namespace CompanyStructure.Application.Services
     {
         public DepartmentService(   
             AppDbContext db,
-            IOrganisationNodeValidationService validation)
-            : base(db, validation)
+            IOrganisationNodeValidationService validation,
+            ILogger<DepartmentService> logger)
+            : base(db, validation, logger)
         {
         }
         public async Task<ServiceResult<GetOrganisationNodeDTO>> CreateAsync(CreateOrganisationNodeDTO dto, int projectId)
         {
+            _logger.LogInformation("Creating department with name {Name} and code {Code} in project {ProjectId}", dto.Name, dto.Code, projectId);
             var projectExists = await _db.Projects.AnyAsync(p => p.Id == projectId);
 
             if (!projectExists)
             {
+                _logger.LogWarning("Project with id {ProjectId} does not exist", projectId);
                 return ServiceResult<GetOrganisationNodeDTO>.Fail(
                     "Project does not exist.",
                     ServiceErrorType.NotFound);
@@ -53,6 +57,7 @@ namespace CompanyStructure.Application.Services
             _db.Departments.Add(department);
             await _db.SaveChangesAsync();
 
+            _logger.LogInformation("Department with id {DepartmentId} created successfully", department.Id);
             return ServiceResult<GetOrganisationNodeDTO>.Ok(
                 department.Adapt<GetOrganisationNodeDTO>());
         }

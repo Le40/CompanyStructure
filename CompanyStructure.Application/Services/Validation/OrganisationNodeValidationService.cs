@@ -1,19 +1,20 @@
 ﻿using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Microsoft.Extensions.Logging;
+
 
 namespace CompanyStructure.Application.Services.Validation
 {
     public class OrganisationNodeValidationService : IOrganisationNodeValidationService
     {
         private readonly AppDbContext _db;
+        private readonly ILogger<OrganisationNodeValidationService> _logger;
 
-        public OrganisationNodeValidationService(AppDbContext db)
+        public OrganisationNodeValidationService(AppDbContext db, ILogger<OrganisationNodeValidationService> logger)
         {
             _db = db;
+            _logger = logger;
         }
 
         public async Task<ServiceResult<bool>> ValidateLeaderAsync(int? leaderId, int companyId)
@@ -27,6 +28,7 @@ namespace CompanyStructure.Application.Services.Validation
 
             if (!leaderValid)
             {
+                _logger.LogWarning("Validation failed for leaderId {LeaderId} in companyId {CompanyId}", leaderId, companyId);
                 return ServiceResult<bool>.Fail(
                     "Leader must be an employee of the same company.",
                     ServiceErrorType.Validation);
@@ -67,6 +69,7 @@ namespace CompanyStructure.Application.Services.Validation
 
             if (exists)
             {
+                _logger.LogWarning("Validation failed for code {Code} in companyId {CompanyId}", code, companyId);
                 return ServiceResult<bool>.Fail(
                     "Code already exists in this company.",
                     ServiceErrorType.Conflict);

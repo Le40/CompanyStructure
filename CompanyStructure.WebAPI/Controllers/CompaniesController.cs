@@ -5,6 +5,7 @@ using CompanyStructure.WebAPI.Controllers.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.Design;
 
 namespace CompanyStructure.WebAPI.Controllers
 {
@@ -13,9 +14,11 @@ namespace CompanyStructure.WebAPI.Controllers
     public class CompaniesController : ControllerBase//: OrganisationNodeController<Company>
     {
         private readonly ICompanyService _service;
-        public CompaniesController(ICompanyService service)
+        private readonly ILogger<CompaniesController> _logger;
+        public CompaniesController(ICompanyService service, ILogger<CompaniesController> logger)
         {
             _service = service;
+            _logger = logger;
         }
 
         [HttpGet]

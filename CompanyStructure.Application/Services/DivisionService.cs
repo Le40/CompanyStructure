@@ -5,6 +5,7 @@ using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace CompanyStructure.Application.Services
 {
@@ -12,17 +13,20 @@ namespace CompanyStructure.Application.Services
     {
         public DivisionService(
             AppDbContext db, 
-            IOrganisationNodeValidationService validation) 
-            : base(db, validation) 
+            IOrganisationNodeValidationService validation,
+            ILogger<DivisionService> logger) 
+            : base(db, validation, logger) 
         { 
         }
         public async Task<ServiceResult<GetOrganisationNodeDTO>> CreateAsync(CreateOrganisationNodeDTO dto, int companyId)
         {
+            _logger.LogInformation("Creating division with name {Name} and code {Code} for company {CompanyId}", dto.Name, dto.Code, companyId);
             var companyExists = await _db.Companies
                 .AnyAsync(c => c.Id == companyId);
 
             if (!companyExists)
             {
+                _logger.LogWarning("Company with id {CompanyId} does not exist", companyId);
                 return ServiceResult<GetOrganisationNodeDTO>.Fail(
                     "Company does not exist.",
                     ServiceErrorType.NotFound);
@@ -48,6 +52,7 @@ namespace CompanyStructure.Application.Services
             _db.Divisions.Add(division);
             await _db.SaveChangesAsync();
 
+            _logger.LogInformation("Division with id {DivisionId} created successfully", division.Id);
             return ServiceResult<GetOrganisationNodeDTO>.Ok(
                 division.Adapt<GetOrganisationNodeDTO>());
         }
