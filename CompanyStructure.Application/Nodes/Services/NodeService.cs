@@ -1,6 +1,6 @@
-﻿using CompanyStructure.Application.Nodes.Interfaces;
+﻿using CompanyStructure.Application.Common.ServiceResult;
+using CompanyStructure.Application.Nodes.Interfaces;
 using CompanyStructure.Application.Nodes.Validation;
-using CompanyStructure.Application.Results;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
 using Mapster;

@@ -1,4 +1,5 @@
-﻿using CompanyStructure.Application.Nodes;
+﻿using CompanyStructure.Application.Common.Pagination;
+using CompanyStructure.Application.Nodes;
 using CompanyStructure.Application.Nodes.Interfaces;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.WebAPI.Helpers;
@@ -16,9 +17,9 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
         }
 
         [HttpGet("/api/companies/{companyId}/[controller]")]
-        public async Task<IActionResult> GetAll(int companyId)
+        public async Task<IActionResult> GetAll([FromRoute]int companyId, [FromQuery] PaginationQuery pagination)
         {
-            var result = await _service.GetAllAsync(companyId);
+            var result = await _service.GetAllAsync(companyId, pagination);
             return result.ToActionResult(this);
         }
 

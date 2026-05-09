@@ -1,5 +1,7 @@
-﻿using CompanyStructure.Application.Employees.InterFaces;
-using CompanyStructure.Application.Results;
+﻿using CompanyStructure.Application.Common.Pagination;
+using CompanyStructure.Application.Common.ServiceResult;
+using CompanyStructure.Application.Common.Extentions;
+using CompanyStructure.Application.Employees.InterFaces;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
 using Mapster;
@@ -19,7 +21,7 @@ namespace CompanyStructure.Application.Employees.Services
             _logger = logger;
         }
 
-        public async Task<ServiceResult<List<EmployeeResponse>>> GetAllEmployeesAsync(int companyId)
+        public async Task<ServiceResult<List<EmployeeResponse>>> GetAllEmployeesAsync(int companyId, PaginationQuery pagination)
         {
             var companyExists = await _db.Companies.AnyAsync(c => c.Id == companyId);
             if (!companyExists)
@@ -30,7 +32,7 @@ namespace CompanyStructure.Application.Employees.Services
             var employees = await _db.Employees
                 .Include(e => e.Company)
                 .Where(e => e.CompanyId == companyId)
-                .ToListAsync();
+                .ToPagedResultAsync<Employee, EmployeeResponse>(pagination.Page, pagination.PageSize);
 
             return ServiceResult<List<EmployeeResponse>>.Ok(employees.Adapt<List<EmployeeResponse>>());
         }

@@ -1,6 +1,9 @@
-﻿using CompanyStructure.Application.Nodes.Interfaces;
+﻿using CompanyStructure.Application.Common.Extentions;
+using CompanyStructure.Application.Common.Pagination;
+using CompanyStructure.Application.Common.ServiceResult;
+using CompanyStructure.Application.Employees;
+using CompanyStructure.Application.Nodes.Interfaces;
 using CompanyStructure.Application.Nodes.Validation;
-using CompanyStructure.Application.Results;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
 using Mapster;
@@ -56,13 +59,16 @@ namespace CompanyStructure.Application.Nodes.Services
                 department.Adapt<NodeResponse>());
         }
 
-        public async Task<ServiceResult<List<NodeResponse>>> GetAllAsync(int projectId)
+        public async Task<ServiceResult<List<NodeResponse>>> GetAllAsync(int projectId, PaginationQuery pagination)
         {
             var nodeExists = await _db.Projects.AnyAsync(n => n.Id == projectId);
             if (!nodeExists)
                 return ServiceResult<List<NodeResponse>>.Fail(ServiceErrors.NotFound<Project>());
 
-            var departments = await _db.Departments.Where(d => d.ProjectId == projectId).ToListAsync();
+            var departments = await _db.Departments
+                .Where(d => d.ProjectId == projectId)
+                .ToPagedResultAsync<Department, NodeResponse>(pagination.Page, pagination.PageSize);
+
             return ServiceResult<List<NodeResponse>>.Ok(departments.Adapt<List<NodeResponse>>());
         }
     }

@@ -1,6 +1,9 @@
-﻿using CompanyStructure.Application.Nodes.Interfaces;
+﻿using CompanyStructure.Application.Common.Pagination;
+using CompanyStructure.Application.Common.ServiceResult;
+using CompanyStructure.Application.Employees;
+using CompanyStructure.Application.Common.Extentions;
+using CompanyStructure.Application.Nodes.Interfaces;
 using CompanyStructure.Application.Nodes.Validation;
-using CompanyStructure.Application.Results;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
 using Mapster;
@@ -50,9 +53,9 @@ namespace CompanyStructure.Application.Nodes.Services
                 company.Adapt<NodeResponse>());
         }
             
-        public async Task<ServiceResult<List<NodeResponse>>> GetAllAsync()
+        public async Task<ServiceResult<List<NodeResponse>>> GetAllAsync(PaginationQuery pagination)    
         {
-            var companies = await _db.Companies.ToListAsync();
+            var companies = await _db.Companies.ToPagedResultAsync<Company, NodeResponse>(pagination.Page, pagination.PageSize); ;
                 
             return ServiceResult<List<NodeResponse>>.Ok(companies.Adapt<List<NodeResponse>>());
         }

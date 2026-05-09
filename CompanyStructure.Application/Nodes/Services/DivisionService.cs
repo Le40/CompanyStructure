@@ -1,6 +1,8 @@
-﻿using CompanyStructure.Application.Nodes.Interfaces;
+﻿using CompanyStructure.Application.Common.Extentions;
+using CompanyStructure.Application.Common.Pagination;
+using CompanyStructure.Application.Common.ServiceResult;
+using CompanyStructure.Application.Nodes.Interfaces;
 using CompanyStructure.Application.Nodes.Validation;
-using CompanyStructure.Application.Results;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
 using Mapster;
@@ -51,13 +53,16 @@ namespace CompanyStructure.Application.Nodes.Services
                 division.Adapt<NodeResponse>());
         }
 
-        public async Task<ServiceResult<List<NodeResponse>>> GetAllAsync(int companyId)
+        public async Task<ServiceResult<List<NodeResponse>>> GetAllAsync(int companyId, PaginationQuery pagination)
         {
             var nodeExists = await _db.Companies.AnyAsync(n => n.Id == companyId);
             if (!nodeExists)
                 return ServiceResult<List<NodeResponse>>.Fail(ServiceErrors.NotFound<Company>());
 
-            var divisions = await _db.Divisions.Where(d => d.CompanyId == companyId).ToListAsync();
+            var divisions = await _db.Divisions
+                .Where(d => d.CompanyId == companyId)
+                .ToPagedResultAsync<Division, NodeResponse>(pagination.Page, pagination.PageSize);
+
             return ServiceResult<List<NodeResponse>>.Ok(divisions.Adapt<List<NodeResponse>>());
         }
     }

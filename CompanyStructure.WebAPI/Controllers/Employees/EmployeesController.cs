@@ -1,4 +1,5 @@
-﻿using CompanyStructure.Application.Employees;
+﻿using CompanyStructure.Application.Common.Pagination;
+using CompanyStructure.Application.Employees;
 using CompanyStructure.Application.Employees.InterFaces;
 using CompanyStructure.WebAPI.Helpers;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +12,9 @@ namespace CompanyStructure.WebAPI.Controllers.Employees
     {
 
         [HttpGet("/api/Companies/{companyId}/[controller]")]
-        public async Task<IActionResult> GetAllEmployees([FromRoute] int companyId)
+        public async Task<IActionResult> GetAllEmployees([FromRoute] int companyId, [FromQuery] PaginationQuery pagination)
         {
-            var result = await _service.GetAllEmployeesAsync(companyId);
+            var result = await _service.GetAllEmployeesAsync(companyId, pagination);
             return result.ToActionResult(this);
         }
 

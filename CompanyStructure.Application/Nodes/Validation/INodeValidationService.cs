@@ -1,4 +1,4 @@
-﻿using CompanyStructure.Application.Results;
+﻿using CompanyStructure.Application.Common.ServiceResult;
 using CompanyStructure.Domain.Models;
 
 namespace CompanyStructure.Application.Nodes.Validation

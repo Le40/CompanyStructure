@@ -1,11 +1,12 @@
-﻿using CompanyStructure.Application.Results;
+﻿using CompanyStructure.Application.Common.Pagination;
+using CompanyStructure.Application.Common.ServiceResult;
 using CompanyStructure.Domain.Models;
 
 namespace CompanyStructure.Application.Nodes.Interfaces
 {
     public interface IDepartmentService : INodeService<Department>
     {
-        Task<ServiceResult<List<NodeResponse>>> GetAllAsync(int projectId);
+        Task<ServiceResult<List<NodeResponse>>> GetAllAsync(int projectId, PaginationQuery pagination);
         Task<ServiceResult<NodeResponse>> CreateAsync(CreateNodeRequest dto, int projectId);
     }
 }

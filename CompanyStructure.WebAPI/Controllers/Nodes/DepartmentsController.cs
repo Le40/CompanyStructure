@@ -1,4 +1,5 @@
-﻿using CompanyStructure.Application.Nodes;
+﻿using CompanyStructure.Application.Common.Pagination;
+using CompanyStructure.Application.Nodes;
 using CompanyStructure.Application.Nodes.Interfaces;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.WebAPI.Helpers;
@@ -16,9 +17,9 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
         }
 
         [HttpGet("/api/projects/{projectId}/[controller]")]
-        public async Task<IActionResult> GetAll(int projectId)
+        public async Task<IActionResult> GetAll([FromRoute] int projectId, [FromQuery] PaginationQuery pagination)
         {
-            var result = await _service.GetAllAsync(projectId);
+            var result = await _service.GetAllAsync(projectId, pagination);
             return result.ToActionResult(this);
         }
             

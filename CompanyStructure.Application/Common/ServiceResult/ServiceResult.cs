@@ -1,5 +1,4 @@
-﻿
-namespace CompanyStructure.Application.Results
+﻿namespace CompanyStructure.Application.Common.ServiceResult
 {
     public record ServiceResult<T>
     {

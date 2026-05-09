@@ -1,4 +1,4 @@
-﻿using CompanyStructure.Application.Results;
+﻿using CompanyStructure.Application.Common.ServiceResult;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyStructure.WebAPI.Helpers
