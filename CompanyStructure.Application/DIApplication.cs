@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using CompanyStructure.Application.Services;
-using CompanyStructure.Application.Services.Interfaces;
-using CompanyStructure.Application.Services.Validation;
+using CompanyStructure.Application.Employees.InterFaces;
+using CompanyStructure.Application.Employees.Services;
+using CompanyStructure.Application.Nodes.Interfaces;
+using CompanyStructure.Application.Nodes.Services;
+using CompanyStructure.Application.Nodes.Validation;
 
 namespace CompanyStructure.Application
 {
@@ -16,7 +18,7 @@ namespace CompanyStructure.Application
             services.AddScoped<IDivisionService, DivisionService>();
             services.AddScoped<IProjectService, ProjectService>();
             services.AddScoped<IDepartmentService, DepartmentService>();
-            services.AddScoped<IOrganisationNodeValidationService, OrganisationNodeValidationService>();
+            services.AddScoped<INodeValidationService, NodeValidationService>();
             return services;
         }
     }
