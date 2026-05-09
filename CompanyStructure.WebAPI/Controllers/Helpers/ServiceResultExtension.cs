@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyStructure.WebAPI.Controllers.Helpers
 {
-    public static class ServiceResultExtention
+    public static class ServiceResultExtension
     {
         public static IActionResult ToActionResult<T>(
             this ServiceResult<T> result,

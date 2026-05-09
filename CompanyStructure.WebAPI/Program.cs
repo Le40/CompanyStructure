@@ -20,9 +20,6 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
 app.UseExceptionHandler(errorApp =>
 {
     errorApp.Run(async context =>
@@ -44,6 +41,8 @@ app.UseExceptionHandler(errorApp =>
 
     });
 });
+
+app.UseHttpsRedirection();
 
 app.MapControllers();
 

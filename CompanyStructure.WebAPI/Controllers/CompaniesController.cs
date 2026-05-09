@@ -1,11 +1,7 @@
 ﻿using CompanyStructure.Application.DTOs.OrganisationNodes;
 using CompanyStructure.Application.Services.Interfaces;
-using CompanyStructure.Domain.Models;
 using CompanyStructure.WebAPI.Controllers.Helpers;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.Design;
 
 namespace CompanyStructure.WebAPI.Controllers
 {
