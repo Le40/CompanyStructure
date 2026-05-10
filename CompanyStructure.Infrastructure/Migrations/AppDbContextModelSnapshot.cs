@@ -46,7 +46,7 @@ namespace CompanyStructure.Infrastructure.Migrations
 
                     b.HasIndex("LeaderId");
 
-                    b.ToTable("Companies");
+                    b.ToTable("Companies", (string)null);
                 });
 
             modelBuilder.Entity("CompanyStructure.Domain.Models.Department", b =>
@@ -82,7 +82,7 @@ namespace CompanyStructure.Infrastructure.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Departments");
+                    b.ToTable("Departments", (string)null);
                 });
 
             modelBuilder.Entity("CompanyStructure.Domain.Models.Division", b =>
@@ -115,7 +115,7 @@ namespace CompanyStructure.Infrastructure.Migrations
 
                     b.HasIndex("LeaderId");
 
-                    b.ToTable("Divisions");
+                    b.ToTable("Divisions", (string)null);
                 });
 
             modelBuilder.Entity("CompanyStructure.Domain.Models.Employee", b =>
@@ -160,7 +160,7 @@ namespace CompanyStructure.Infrastructure.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("CompanyStructure.Domain.Models.Project", b =>
@@ -196,7 +196,7 @@ namespace CompanyStructure.Infrastructure.Migrations
 
                     b.HasIndex("LeaderId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("CompanyStructure.Domain.Models.Company", b =>

@@ -33,6 +33,45 @@ namespace CompanyStructure.Infrastructure.Data
                 .WithOne(d => d.Company)
                 .HasForeignKey(d => d.CompanyId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Division>()
+                .HasOne(d => d.Company)
+                .WithMany(c => c.Divisions)
+                .HasForeignKey(d => d.CompanyId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Division>()
+                .HasOne(d => d.Leader)
+                .WithMany()
+                .HasForeignKey(d => d.LeaderId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Project>()
+                .HasOne(p => p.Division)
+                .WithMany(d => d.Projects)
+                .HasForeignKey(p => p.DivisionId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Project>()
+                .HasOne(p => p.Leader)
+                .WithMany()
+                .HasForeignKey(p => p.LeaderId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Department>()
+                .HasOne(d => d.Project)
+                .WithMany(d => d.Departments)
+                .HasForeignKey(d => d.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Department>()
+                .HasOne(d => d.Leader)
+                .WithMany()
+                .HasForeignKey(d => d.LeaderId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Employee>()
+                .HasOne(e => e.Company)
+                .WithMany(c => c.Employees)
+                .HasForeignKey(e => e.CompanyId)
+                .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Employee>()
                 .HasIndex(e => e.Email)
                 .IsUnique();

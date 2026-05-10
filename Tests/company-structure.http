@@ -118,7 +118,11 @@ Content-Type: application/json
   "leaderId": 1
 }
 
-### 14 - Division with wrong leader
+### 14 - Delete employee that is leader
+## TEST-EXPECT-STATUS: [204]
+DELETE {{baseUrl}}/api/employees/1/
+
+### 15 - Division with wrong leader
 ## TEST-EXPECT-STATUS: [400]
 POST {{baseUrl}}/api/companies/1/divisions
 Content-Type: application/json
@@ -129,7 +133,7 @@ Content-Type: application/json
   "leaderId": 2
 }
 
-### 15 - Division for non-existing company
+### 16 - Division for non-existing company
 ## TEST-EXPECT-STATUS: [404]
 POST {{baseUrl}}/api/companies/999/divisions
 Content-Type: application/json
@@ -139,15 +143,15 @@ Content-Type: application/json
   "code": "INVALID_DIV"
 }
 
-### 16 - Get divisions
+### 17 - Get divisions
 ## TEST-EXPECT-STATUS: [200]
 GET {{baseUrl}}/api/companies/1/divisions
 
-### 17 - Get divisions
+### 18 - Get divisions
 ## TEST-EXPECT-STATUS: [404]
 GET {{baseUrl}}/api/companies/999/divisions
 
-### 18 - Create project
+### 19 - Create project
 ## TEST-EXPECT-STATUS: [201]
 POST {{baseUrl}}/api/divisions/1/projects
 Content-Type: application/json
@@ -158,7 +162,7 @@ Content-Type: application/json
   "leaderId": 1
 }
 
-### 19 - Duplicate project code
+### 20 - Duplicate project code
 ## TEST-EXPECT-STATUS: [409]
 POST {{baseUrl}}/api/divisions/1/projects
 Content-Type: application/json
@@ -169,7 +173,7 @@ Content-Type: application/json
   "leaderId": 1
 }
 
-### 20 - Project under non-existing division
+### 21 - Project under non-existing division
 ## TEST-EXPECT-STATUS: [404]
 POST {{baseUrl}}/api/divisions/999/projects
 Content-Type: application/json
@@ -179,7 +183,7 @@ Content-Type: application/json
   "code": "INVALID"
 }
 
-### 21 - Project with wrong leader
+### 22 - Project with wrong leader
 ## TEST-EXPECT-STATUS: [400]
 POST {{baseUrl}}/api/divisions/1/projects
 Content-Type: application/json
@@ -190,15 +194,15 @@ Content-Type: application/json
   "leaderId": 2
 }
 
-### 22 - Get projects
+### 23 - Get projects
 ## TEST-EXPECT-STATUS: [200]
 GET {{baseUrl}}/api/divisions/1/projects
 
-### 23 - Get projects for non-existing division
+### 24 - Get projects for non-existing division
 ## TEST-EXPECT-STATUS: [404]
 GET {{baseUrl}}/api/divisions/999/projects
 
-### 24 - Create department
+### 25 - Create department
 ## TEST-EXPECT-STATUS: [201]
 POST {{baseUrl}}/api/projects/1/departments
 Content-Type: application/json
@@ -209,7 +213,7 @@ Content-Type: application/json
   "leaderId": 1
 }
 
-### 25 - Duplicate department code
+### 26 - Duplicate department code
 ## TEST-EXPECT-STATUS: [409]
 POST {{baseUrl}}/api/projects/1/departments
 Content-Type: application/json
@@ -219,7 +223,7 @@ Content-Type: application/json
   "code": "BACKEND"
 }
 
-### 26 - Department under non-existing project
+### 27 - Department under non-existing project
 ## TEST-EXPECT-STATUS: [404]
 POST {{baseUrl}}/api/projects/999/departments
 Content-Type: application/json
@@ -229,7 +233,7 @@ Content-Type: application/json
   "code": "INVALID"
 }
 
-### 27 - Department with wrong leader
+### 28 - Department with wrong leader
 ## TEST-EXPECT-STATUS: [400]
 POST {{baseUrl}}/api/projects/1/departments
 Content-Type: application/json
@@ -240,15 +244,15 @@ Content-Type: application/json
   "leaderId": 2
 }
 
-### 28 - Get departments
+### 29 - Get departments
 ## TEST-EXPECT-STATUS: [200]
 GET {{baseUrl}}/api/projects/1/departments
 
-### 29 - Get departments for non-existing project
+### 30 - Get departments for non-existing project
 ## TEST-EXPECT-STATUS: [404]
 GET {{baseUrl}}/api/projects/999/departments
 
-### 30 - Update employee
+### 31 - Update employee
 ## TEST-EXPECT-STATUS: [200]
 PUT {{baseUrl}}/api/employees/1
 Content-Type: application/json
@@ -260,7 +264,7 @@ Content-Type: application/json
   "phoneNumber": "+421900123456"
 }
 
-### 31 - Update employee duplicate email
+### 32 - Update employee duplicate email
 ## TEST-EXPECT-STATUS: [409]
 PUT {{baseUrl}}/api/employees/1
 Content-Type: application/json
@@ -272,7 +276,7 @@ Content-Type: application/json
   "phoneNumber": "+421900123456"
 }
 
-### 32 - Input validation (empty company)
+### 33 - Input validation (empty company)
 ## TEST-EXPECT-STATUS: [400]
 POST {{baseUrl}}/api/companies
 Content-Type: application/json
@@ -282,7 +286,7 @@ Content-Type: application/json
   "code": ""
 }
 
-### 33 - Input validation (bad email)
+### 34 - Input validation (bad email)
 ## TEST-EXPECT-STATUS: [400]
 POST {{baseUrl}}/api/companies/1/employees
 Content-Type: application/json
@@ -293,26 +297,26 @@ Content-Type: application/json
   "email": "invalid"
 }
 
-### 34 - Delete department
+### 35 - Delete department
 ## TEST-EXPECT-STATUS: [204]
 DELETE {{baseUrl}}/api/departments/1
 
-### 35 - Delete project
+### 36 - Delete project
 ## TEST-EXPECT-STATUS: [204]
 DELETE {{baseUrl}}/api/projects/1
 
-### 36 - Delete division
+### 37 - Delete division
 ## TEST-EXPECT-STATUS: [204]
 DELETE {{baseUrl}}/api/divisions/1
 
-### 37 - Delete Company
+### 38 - Delete Company
 ## TEST-EXPECT-STATUS: [204]
 DELETE {{baseUrl}}/api/companies/1
 
-### 38 - Delete employee
+### 39 - Delete employee
 ## TEST-EXPECT-STATUS: [204]
 DELETE {{baseUrl}}/api/employees/2
 
-### 39 - Delete Company
+### 40 - Delete Company
 ## TEST-EXPECT-STATUS: [204]
 DELETE {{baseUrl}}/api/companies/2

@@ -10,6 +10,13 @@
     <File Path="Database/reset-test-data.sql.sql" />
   </Folder>
   <Folder Name="/src/Tests/">
+    <File Path="Tests/01-companies.http" />
+    <File Path="Tests/02-company-structure.http" />
+    <File Path="Tests/02-employees.http" />
+    <File Path="Tests/03-divisions.http" />
+    <File Path="Tests/04-projects.http" />
+    <File Path="Tests/05-departments.http" />
+    <File Path="Tests/06-input-validation.http" />
     <File Path="Tests/company-structure.http" />
     <File Path="Tests/env.json" />
   </Folder>

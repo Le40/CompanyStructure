@@ -109,6 +109,23 @@ namespace CompanyStructure.Application.Employees.Services
                 _logger.LogWarning("Employee with ID {EmployeeId} not found.", id);
                 return ServiceResult<bool>.Fail(ServiceErrors.NotFound<Employee>());
             }
+            // Check if the employee is a leader of any node
+            await _db.Companies
+                 .Where(c => c.LeaderId == id)
+                 .ExecuteUpdateAsync(s => s.SetProperty(c => c.LeaderId, (int?)null));
+
+            await _db.Divisions
+                .Where(d => d.LeaderId == id)
+                .ExecuteUpdateAsync(s => s.SetProperty(d => d.LeaderId, (int?)null));
+
+            await _db.Projects
+                .Where(p => p.LeaderId == id)
+                .ExecuteUpdateAsync(s => s.SetProperty(p => p.LeaderId, (int?)null));
+
+            await _db.Departments
+                .Where(d => d.LeaderId == id)
+                .ExecuteUpdateAsync(s => s.SetProperty(d => d.LeaderId, (int?)null));
+
             _db.Employees.Remove(employee);
             await _db.SaveChangesAsync();
 
