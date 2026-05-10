@@ -1,6 +1,6 @@
 ﻿using CompanyStructure.Application.Common.Pagination;
 using CompanyStructure.Application.Common.ServiceResult;
-using CompanyStructure.Application.Common.Extentions;
+using CompanyStructure.Application.Common.Extensions;
 using CompanyStructure.Application.Employees.InterFaces;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
@@ -21,12 +21,12 @@ namespace CompanyStructure.Application.Employees.Services
             _logger = logger;
         }
 
-        public async Task<ServiceResult<List<EmployeeResponse>>> GetAllEmployeesAsync(int companyId, PaginationQuery pagination)
+        public async Task<ServiceResult<PagedResult<EmployeeResponse>>> GetAllEmployeesAsync(int companyId, PaginationQuery pagination)
         {
             var companyExists = await _db.Companies.AnyAsync(c => c.Id == companyId);
             if (!companyExists)
             {
-                return ServiceResult<List<EmployeeResponse>>.Fail(ServiceErrors.CompanyNotFound);
+                return ServiceResult<PagedResult<EmployeeResponse>>.Fail(ServiceErrors.CompanyNotFound);
             }
 
             var employees = await _db.Employees
@@ -34,7 +34,7 @@ namespace CompanyStructure.Application.Employees.Services
                 .Where(e => e.CompanyId == companyId)
                 .ToPagedResultAsync<Employee, EmployeeResponse>(pagination.Page, pagination.PageSize);
 
-            return ServiceResult<List<EmployeeResponse>>.Ok(employees.Adapt<List<EmployeeResponse>>());
+            return ServiceResult<PagedResult<EmployeeResponse>>.Ok(employees);
         }
 
         public async Task<ServiceResult<EmployeeResponse?>> GetEmployeeByIdAsync(int id)

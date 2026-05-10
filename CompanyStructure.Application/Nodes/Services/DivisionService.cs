@@ -1,4 +1,4 @@
-﻿using CompanyStructure.Application.Common.Extentions;
+﻿using CompanyStructure.Application.Common.Extensions;
 using CompanyStructure.Application.Common.Pagination;
 using CompanyStructure.Application.Common.ServiceResult;
 using CompanyStructure.Application.Nodes.Interfaces;
@@ -20,6 +20,20 @@ namespace CompanyStructure.Application.Nodes.Services
             : base(db, validation, logger) 
         { 
         }
+
+        public async Task<ServiceResult<PagedResult<NodeResponse>>> GetAllAsync(int companyId, PaginationQuery pagination)
+        {
+            var nodeExists = await _db.Companies.AnyAsync(n => n.Id == companyId);
+            if (!nodeExists)
+                return ServiceResult<PagedResult<NodeResponse>>.Fail(ServiceErrors.NotFound<Company>());
+
+            var divisions = await _db.Divisions
+                .Where(d => d.CompanyId == companyId)
+                .ToPagedResultAsync<Division, NodeResponse>(pagination.Page, pagination.PageSize);
+
+            return ServiceResult<PagedResult<NodeResponse>>.Ok(divisions);
+        }
+
         public async Task<ServiceResult<NodeResponse>> CreateAsync(CreateNodeRequest dto, int companyId)
         {
             _logger.LogInformation("Creating division with name {Name} and code {Code} for company {CompanyId}", dto.Name, dto.Code, companyId);
@@ -50,19 +64,6 @@ namespace CompanyStructure.Application.Nodes.Services
             _logger.LogInformation("Division with id {DivisionId} created successfully", division.Id);
             return ServiceResult<NodeResponse>.Ok(
                 division.Adapt<NodeResponse>());
-        }
-
-        public async Task<ServiceResult<List<NodeResponse>>> GetAllAsync(int companyId, PaginationQuery pagination)
-        {
-            var nodeExists = await _db.Companies.AnyAsync(n => n.Id == companyId);
-            if (!nodeExists)
-                return ServiceResult<List<NodeResponse>>.Fail(ServiceErrors.NotFound<Company>());
-
-            var divisions = await _db.Divisions
-                .Where(d => d.CompanyId == companyId)
-                .ToPagedResultAsync<Division, NodeResponse>(pagination.Page, pagination.PageSize);
-
-            return ServiceResult<List<NodeResponse>>.Ok(divisions.Adapt<List<NodeResponse>>());
         }
     }
 }

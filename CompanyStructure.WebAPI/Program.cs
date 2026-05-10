@@ -1,5 +1,6 @@
 using CompanyStructure.Application;
 using CompanyStructure.Infrastructure;
+using Microsoft.AspNetCore.Diagnostics;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,7 +26,7 @@ app.UseExceptionHandler(errorApp =>
     errorApp.Run(async context =>
     {
         var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-        var exceptionHandlerPathFeature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerPathFeature>();
+        var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
 
         logger.LogError(exceptionHandlerPathFeature?.Error,
             "An unhandled exception occurred while processing the request {Path}.",

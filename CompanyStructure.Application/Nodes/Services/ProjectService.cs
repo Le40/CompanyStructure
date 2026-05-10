@@ -1,4 +1,4 @@
-﻿using CompanyStructure.Application.Common.Extentions;
+﻿using CompanyStructure.Application.Common.Extensions;
 using CompanyStructure.Application.Common.Pagination;
 using CompanyStructure.Application.Common.ServiceResult;
 using CompanyStructure.Application.Nodes.Interfaces;
@@ -19,6 +19,19 @@ namespace CompanyStructure.Application.Nodes.Services
             ILogger<ProjectService> logger)
             : base(db, validation, logger)
         {
+        }
+
+        public async Task<ServiceResult<PagedResult<NodeResponse>>> GetAllAsync(int divisionId, PaginationQuery pagination)
+        {
+            var nodeExists = await _db.Divisions.AnyAsync(n => n.Id == divisionId);
+            if (!nodeExists)
+                return ServiceResult<PagedResult<NodeResponse>>.Fail(ServiceErrors.NotFound<Division>());
+
+            var projects = await _db.Projects
+                .Where(d => d.DivisionId == divisionId)
+                .ToPagedResultAsync<Project, NodeResponse>(pagination.Page, pagination.PageSize);
+
+            return ServiceResult<PagedResult<NodeResponse>>.Ok(projects);
         }
 
         public async Task<ServiceResult<NodeResponse>> CreateAsync(CreateNodeRequest dto, int divisionId)
@@ -53,19 +66,6 @@ namespace CompanyStructure.Application.Nodes.Services
             _logger.LogInformation("Project with id {ProjectId} created successfully", project.Id);
             return ServiceResult<NodeResponse>.Ok(
                 project.Adapt<NodeResponse>());
-        }
-
-        public async Task<ServiceResult<List<NodeResponse>>> GetAllAsync(int divisionId, PaginationQuery pagination)
-        {
-            var nodeExists = await _db.Divisions.AnyAsync(n => n.Id == divisionId);
-            if (!nodeExists)  
-                return ServiceResult<List<NodeResponse>>.Fail(ServiceErrors.NotFound<Division>());
-
-            var projects = await _db.Projects
-                .Where(d => d.DivisionId == divisionId)
-                .ToPagedResultAsync<Project, NodeResponse>(pagination.Page, pagination.PageSize);
-
-            return ServiceResult<List<NodeResponse>>.Ok(projects.Adapt<List<NodeResponse>>());
         }
     }
 }

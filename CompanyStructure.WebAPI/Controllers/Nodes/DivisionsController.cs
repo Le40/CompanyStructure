@@ -16,14 +16,14 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
             _service = service;
         }
 
-        [HttpGet("/api/companies/{companyId}/[controller]")]
+        [HttpGet("/api/Companies/{companyId}/[controller]")]
         public async Task<IActionResult> GetAll([FromRoute]int companyId, [FromQuery] PaginationQuery pagination)
         {
             var result = await _service.GetAllAsync(companyId, pagination);
             return result.ToActionResult(this);
         }
 
-        [HttpPost("/api/companies/{companyId}/[controller]")]
+        [HttpPost("/api/Companies/{companyId}/[controller]")]
         public async Task<IActionResult> Create(CreateNodeRequest dto, int companyId)
         {
             var result = await _service.CreateAsync(dto, companyId);

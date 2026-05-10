@@ -29,31 +29,12 @@ namespace CompanyStructure.Application.Nodes.Validation
 
             if (!leaderValid)
             {
-                _logger.LogWarning("Validation failed for leaderId {LeaderId} in companyId {CompanyId}", leaderId, companyId);
+                _logger.LogWarning("Leader with id {LeaderId} does not exist in companyId {CompanyId}", leaderId, companyId);
                 return ServiceResult<bool>.Fail(ServiceErrors.LeaderIsNotEmployee<Company>());
             }
 
             return ServiceResult<bool>.Ok(true);
         }
-
-        /*public async Task<ServiceResult<bool>> ValidateCodeIsUniqueAsync<T>(
-            string code,
-            int? excludeId = null)
-            where T : class, IOrganisationNode
-        {
-            var exists = await _db.Set<T>().AnyAsync(x =>
-                x.Code == code &&
-                (!excludeId.HasValue || x.Id != excludeId.Value));
-
-            if (exists)
-            {
-                return ServiceResult<bool>.Fail(
-                    "Code already exists in this company.",
-                    ServiceErrorType.Conflict);
-            }
-
-            return ServiceResult<bool>.Ok(true);
-        }*/
 
         public async Task<ServiceResult<bool>> ValidateCodeIsUniqueAsync<T>(
             string code,
@@ -68,7 +49,7 @@ namespace CompanyStructure.Application.Nodes.Validation
 
             if (exists)
             {
-                _logger.LogWarning("Validation failed for code {Code} in companyId {CompanyId}", code, companyId);
+                _logger.LogWarning("Code for {Type} in company with id {CompanyId} already existst.", typeof(T).Name, companyId);
                 return ServiceResult<bool>.Fail(ServiceErrors.DuplicateCode<T>());
             }
 

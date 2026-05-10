@@ -6,7 +6,7 @@ namespace CompanyStructure.Application.Nodes.Interfaces
 {
     public interface IProjectService : INodeService<Project>
     {
-        Task<ServiceResult<List<NodeResponse>>> GetAllAsync(int divisionId, PaginationQuery pagination);
+        Task<ServiceResult<PagedResult<NodeResponse>>> GetAllAsync(int divisionId, PaginationQuery pagination);
         Task<ServiceResult<NodeResponse>> CreateAsync(CreateNodeRequest dto, int divisionId);
     }
 }

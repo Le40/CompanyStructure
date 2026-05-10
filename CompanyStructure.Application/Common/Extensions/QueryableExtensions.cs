@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Mapster;
 
-namespace CompanyStructure.Application.Common.Extentions
+namespace CompanyStructure.Application.Common.Extensions
 {
-    public static class QueryableExtentions
+    public static class QueryableExtensions
     {
         public static async Task<PagedResult<TDto>> ToPagedResultAsync<TEntity, TDto>(
         this IQueryable<TEntity> query,

@@ -1,4 +1,4 @@
-### 01 - Create company
+### 01 - Created company
 ## TEST-EXPECT-STATUS: [201]
 POST {{baseUrl}}/api/companies
 Content-Type: application/json
@@ -7,6 +7,7 @@ Content-Type: application/json
   "name": "ACME",
   "code": "ACME"
 }
+
 
 ### 02 - Duplicate company code
 ## TEST-EXPECT-STATUS: [409]

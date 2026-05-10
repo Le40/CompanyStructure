@@ -16,14 +16,14 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
             _service = service;
         }
 
-        [HttpGet("/api/projects/{projectId}/[controller]")]
+        [HttpGet("/api/Projects/{projectId}/[controller]")]
         public async Task<IActionResult> GetAll([FromRoute] int projectId, [FromQuery] PaginationQuery pagination)
         {
             var result = await _service.GetAllAsync(projectId, pagination);
             return result.ToActionResult(this);
         }
             
-        [HttpPost("/api/projects/{projectId}/[controller]")]
+        [HttpPost("/api/Projects/{projectId}/[controller]")]
         public async Task<IActionResult> Create(CreateNodeRequest dto, int projectId)
         {
             var result = await _service.CreateAsync(dto, projectId);

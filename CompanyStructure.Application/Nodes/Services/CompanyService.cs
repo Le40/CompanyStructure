@@ -1,7 +1,7 @@
 ﻿using CompanyStructure.Application.Common.Pagination;
 using CompanyStructure.Application.Common.ServiceResult;
 using CompanyStructure.Application.Employees;
-using CompanyStructure.Application.Common.Extentions;
+using CompanyStructure.Application.Common.Extensions;
 using CompanyStructure.Application.Nodes.Interfaces;
 using CompanyStructure.Application.Nodes.Validation;
 using CompanyStructure.Domain.Models;
@@ -23,6 +23,23 @@ namespace CompanyStructure.Application.Nodes.Services
             _db = db;
             _validation = validation;
             _logger = logger;
+        }
+            
+        public async Task<ServiceResult<PagedResult<NodeResponse>>> GetAllAsync(PaginationQuery pagination)    
+        {
+            var companies = await _db.Companies.ToPagedResultAsync<Company, NodeResponse>(pagination.Page, pagination.PageSize); ;
+                
+            return ServiceResult<PagedResult<NodeResponse>>.Ok(companies);
+        }
+
+        public async Task<ServiceResult<NodeResponse?>> GetByIdAsync(int id)
+        {
+            var node = await _db.Companies.FindAsync(id);
+            if (node == null)
+            {
+                return ServiceResult<NodeResponse?>.Fail(ServiceErrors.NotFound<Company>());
+            }
+            return ServiceResult<NodeResponse?>.Ok(node.Adapt<NodeResponse>());
         }
 
         public async Task<ServiceResult<NodeResponse>> CreateAsync(CreateNodeRequest dto)
@@ -51,23 +68,6 @@ namespace CompanyStructure.Application.Nodes.Services
             _logger.LogInformation("Company created successfully with id: {Id}", company.Id);
             return ServiceResult<NodeResponse>.Ok(
                 company.Adapt<NodeResponse>());
-        }
-            
-        public async Task<ServiceResult<List<NodeResponse>>> GetAllAsync(PaginationQuery pagination)    
-        {
-            var companies = await _db.Companies.ToPagedResultAsync<Company, NodeResponse>(pagination.Page, pagination.PageSize); ;
-                
-            return ServiceResult<List<NodeResponse>>.Ok(companies.Adapt<List<NodeResponse>>());
-        }
-
-        public async Task<ServiceResult<NodeResponse?>> GetByIdAsync(int id)
-        {
-            var node = await _db.Companies.FindAsync(id);
-            if (node == null)
-            {
-                return ServiceResult<NodeResponse?>.Fail(ServiceErrors.NotFound<Company>());
-            }
-            return ServiceResult<NodeResponse?>.Ok(node.Adapt<NodeResponse>());
         }
 
 

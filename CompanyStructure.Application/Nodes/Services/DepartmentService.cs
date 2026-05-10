@@ -1,4 +1,4 @@
-﻿using CompanyStructure.Application.Common.Extentions;
+﻿using CompanyStructure.Application.Common.Extensions;
 using CompanyStructure.Application.Common.Pagination;
 using CompanyStructure.Application.Common.ServiceResult;
 using CompanyStructure.Application.Employees;
@@ -21,6 +21,20 @@ namespace CompanyStructure.Application.Nodes.Services
             : base(db, validation, logger)
         {
         }
+
+        public async Task<ServiceResult<PagedResult<NodeResponse>>> GetAllAsync(int projectId, PaginationQuery pagination)
+        {
+            var nodeExists = await _db.Projects.AnyAsync(n => n.Id == projectId);
+            if (!nodeExists)
+                return ServiceResult<PagedResult<NodeResponse>>.Fail(ServiceErrors.NotFound<Project>());
+
+            var departments = await _db.Departments
+                .Where(d => d.ProjectId == projectId)
+                .ToPagedResultAsync<Department, NodeResponse>(pagination.Page, pagination.PageSize);
+
+            return ServiceResult<PagedResult<NodeResponse>>.Ok(departments);
+        }
+
         public async Task<ServiceResult<NodeResponse>> CreateAsync(CreateNodeRequest dto, int projectId)
         {
             _logger.LogInformation("Creating department with code {Code} in project {ProjectId}", dto.Code, projectId);
@@ -53,19 +67,6 @@ namespace CompanyStructure.Application.Nodes.Services
             _logger.LogInformation("Department with id {DepartmentId} created successfully", department.Id);
             return ServiceResult<NodeResponse>.Ok(
                 department.Adapt<NodeResponse>());
-        }
-
-        public async Task<ServiceResult<List<NodeResponse>>> GetAllAsync(int projectId, PaginationQuery pagination)
-        {
-            var nodeExists = await _db.Projects.AnyAsync(n => n.Id == projectId);
-            if (!nodeExists)
-                return ServiceResult<List<NodeResponse>>.Fail(ServiceErrors.NotFound<Project>());
-
-            var departments = await _db.Departments
-                .Where(d => d.ProjectId == projectId)
-                .ToPagedResultAsync<Department, NodeResponse>(pagination.Page, pagination.PageSize);
-
-            return ServiceResult<List<NodeResponse>>.Ok(departments.Adapt<List<NodeResponse>>());
         }
     }
 }

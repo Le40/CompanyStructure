@@ -11,11 +11,10 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
     public class CompaniesController : ControllerBase//: OrganisationNodeController<Company>
     {
         private readonly ICompanyService _service;
-        private readonly ILogger<CompaniesController> _logger;
-        public CompaniesController(ICompanyService service, ILogger<CompaniesController> logger)
+
+        public CompaniesController(ICompanyService service)
         {
             _service = service;
-            _logger = logger;
         }
 
         [HttpGet]
