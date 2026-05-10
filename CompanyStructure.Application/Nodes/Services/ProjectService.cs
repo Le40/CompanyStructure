@@ -24,19 +24,15 @@ namespace CompanyStructure.Application.Nodes.Services
         public async Task<ServiceResult<NodeResponse>> CreateAsync(CreateNodeRequest dto, int divisionId)
         {
             _logger.LogInformation("Creating project with name {Name} and code {Code} under division {DivisionId}", dto.Name, dto.Code, divisionId);
-            var divisionExists = await _db.Divisions.AnyAsync(d => d.Id == divisionId);
+            var division = await _db.Divisions.FirstOrDefaultAsync(d => d.Id == divisionId);
 
-            if (!divisionExists)
+            if (division == null)
             {
                 _logger.LogWarning("Division with id {DivisionId} does not exist", divisionId);
                 return ServiceResult<NodeResponse>.Fail(ServiceErrors.NotFound<Division>());
             }
 
-            var companyId = await _db.Divisions
-                .Where(d => d.Id == divisionId)
-                .Select(d => d.CompanyId)
-                .FirstOrDefaultAsync();
-
+            var companyId = division.CompanyId; 
             var leaderValidation = await _validation.ValidateLeaderAsync(dto.LeaderId, companyId);
 
             if (!leaderValidation.Success)

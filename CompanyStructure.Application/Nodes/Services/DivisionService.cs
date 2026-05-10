@@ -23,8 +23,7 @@ namespace CompanyStructure.Application.Nodes.Services
         public async Task<ServiceResult<NodeResponse>> CreateAsync(CreateNodeRequest dto, int companyId)
         {
             _logger.LogInformation("Creating division with name {Name} and code {Code} for company {CompanyId}", dto.Name, dto.Code, companyId);
-            var companyExists = await _db.Companies
-                .AnyAsync(c => c.Id == companyId);
+            var companyExists = await _db.Companies.AnyAsync(c => c.Id == companyId);
 
             if (!companyExists)
             {
