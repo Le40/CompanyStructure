@@ -3,6 +3,7 @@ using CompanyStructure.Application.Nodes.DTOs;
 using CompanyStructure.Application.Nodes.Interfaces;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.WebAPI.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyStructure.WebAPI.Controllers.Nodes
@@ -15,6 +16,8 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
         {
             _service = service;
         }
+
+        [AllowAnonymous]
         [HttpGet("/api/Divisions/{divisionId}/[controller]")]
         public async Task<IActionResult> GetAll([FromRoute] int divisionId, [FromQuery] PaginationQuery pagination)
         {
@@ -22,6 +25,7 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
             return result.ToActionResult(this);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("/api/Divisions/{divisionId}/[controller]")]
         public async Task<IActionResult> Create(CreateNodeRequest dto, int divisionId)
         {

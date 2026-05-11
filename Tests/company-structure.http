@@ -1,6 +1,7 @@
 ### 01 - Created company
 ## TEST-EXPECT-STATUS: [201]
 POST {{baseUrl}}/api/companies
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbiIsImV4cCI6MTc3ODUxNjAxMywiaXNzIjoiQ29tcGFueVN0cnVjdHVyZUFQSSIsImF1ZCI6IkNvbXBhbnlTdHJ1Y3R1cmVDbGllbnQifQ.zLAURRWfgj_gRwrHu1Abvcty5G0R8ZYBL1qCBXBmm6E
 Content-Type: application/json
 
 {

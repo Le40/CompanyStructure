@@ -2,6 +2,7 @@
 using CompanyStructure.Application.Employees.DTOs;
 using CompanyStructure.Application.Employees.Interfaces;
 using CompanyStructure.WebAPI.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyStructure.WebAPI.Controllers.Employees
@@ -10,7 +11,7 @@ namespace CompanyStructure.WebAPI.Controllers.Employees
     [ApiController]
     public class EmployeesController(IEmployeeService _service) : ControllerBase
     {
-
+        [Authorize(Roles = "User")]
         [HttpGet("/api/Companies/{companyId}/[controller]")]
         public async Task<IActionResult> GetAllEmployees([FromRoute] int companyId, [FromQuery] PaginationQuery pagination)
         {
@@ -18,6 +19,7 @@ namespace CompanyStructure.WebAPI.Controllers.Employees
             return result.ToActionResult(this);
         }
 
+        [Authorize(Roles = "User")]
         [HttpPost("/api/Companies/{companyId}/[controller]")]
         public async Task<IActionResult> CreateEmployee(int companyId, CreateEmployeeRequest dto)
         {
@@ -28,6 +30,7 @@ namespace CompanyStructure.WebAPI.Controllers.Employees
             return CreatedAtAction(nameof(GetEmployeeById), new { id = result.Data!.Id }, result.Data);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetEmployeeById(int id)
         {
@@ -35,6 +38,7 @@ namespace CompanyStructure.WebAPI.Controllers.Employees
             return result.ToActionResult(this);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEmployee(int id, UpdateEmployeeRequest dto)
         {
@@ -42,6 +46,7 @@ namespace CompanyStructure.WebAPI.Controllers.Employees
             return result.ToActionResult(this);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(int id)
         {

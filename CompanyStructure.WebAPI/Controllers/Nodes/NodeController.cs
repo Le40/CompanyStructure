@@ -2,6 +2,7 @@
 using CompanyStructure.Application.Nodes.Interfaces;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.WebAPI.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyStructure.WebAPI.Controllers.Nodes
@@ -18,6 +19,7 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
             _nodeService = nodeService;
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -25,6 +27,7 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
             return result.ToActionResult(this);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdateNodeRequest dto)
         {
@@ -32,6 +35,7 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
             return result.ToActionResult(this);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

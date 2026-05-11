@@ -2,6 +2,7 @@
 using CompanyStructure.Application.Nodes.DTOs;
 using CompanyStructure.Application.Nodes.Interfaces;
 using CompanyStructure.WebAPI.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyStructure.WebAPI.Controllers.Nodes
@@ -17,6 +18,7 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
             _service = service;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] PaginationQuery pagination)
         {
@@ -24,6 +26,7 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
             return result.ToActionResult(this);
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -38,6 +41,8 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
             return result.ToActionResult(this);
         }
 
+
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Create(CreateCompanyRequest dto)
         {
@@ -48,6 +53,7 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
             return CreatedAtAction(nameof(GetById), new { id = result.Data!.Id }, result.Data);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdateNodeRequest dto)
         {
@@ -55,6 +61,7 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
             return result.ToActionResult(this);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
