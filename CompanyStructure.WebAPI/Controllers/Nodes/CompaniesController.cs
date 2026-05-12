@@ -25,7 +25,7 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateNodeRequest dto)
+        public async Task<IActionResult> Create(CreateCompanyRequest dto)
         {
             var result = await _service.CreateAsync(dto);
             if (!result.Success)

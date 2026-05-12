@@ -43,7 +43,7 @@ namespace CompanyStructure.Infrastructure.Services.Nodes
             return ServiceResult<NodeResponse?>.Ok(node.Adapt<NodeResponse>());
         }
 
-        public async Task<ServiceResult<NodeResponse>> CreateAsync(CreateNodeRequest dto)
+        public async Task<ServiceResult<NodeResponse>> CreateAsync(CreateCompanyRequest dto)
         {
             _logger.LogInformation("Creating company with name: {Name} and code: {Code}", dto.Name, dto.Code);
 
@@ -100,14 +100,8 @@ namespace CompanyStructure.Infrastructure.Services.Nodes
             return ServiceResult<bool>.Ok(true);
         }
 
-        private async Task<ServiceResult<bool>> ValidateCreateAsync(CreateNodeRequest dto)
+        private async Task<ServiceResult<bool>> ValidateCreateAsync(CreateCompanyRequest dto)
         {
-            if (dto.LeaderId != null)
-            {
-                _logger.LogWarning("Failed to create company. Company director cannot be assigned when creating a new company.");
-                return ServiceResult<bool>.Fail(ServiceErrors.CompanyLeaderCannotBeAssignedOnCreate);
-            }
-
             var codeExists = await _db.Companies.AnyAsync(d => d.Code == dto.Code);
             if (codeExists)
             {
