@@ -43,6 +43,22 @@ namespace CompanyStructure.Infrastructure.Services.Nodes
             return ServiceResult<NodeResponse?>.Ok(node.Adapt<NodeResponse>());
         }
 
+        public async Task<ServiceResult<CompanyStructureResponse>> GetStructureByIdAsync(int id)
+        {
+            var company = await _db.Companies
+                .Include(c => c.Divisions)
+                    .ThenInclude(d => d.Projects)
+                        .ThenInclude(p => p.Departments)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (company == null)
+            {
+                return ServiceResult<CompanyStructureResponse>.Fail(ServiceErrors.NotFound<Company>());
+            }
+            var structure = company.Adapt<CompanyStructureResponse>();
+            return ServiceResult<CompanyStructureResponse>.Ok(structure);
+        }
+
         public async Task<ServiceResult<NodeResponse>> CreateAsync(CreateCompanyRequest dto)
         {
             _logger.LogInformation("Creating company with name: {Name} and code: {Code}", dto.Name, dto.Code);

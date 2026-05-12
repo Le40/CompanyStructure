@@ -24,6 +24,20 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
             return result.ToActionResult(this);
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var result = await _service.GetByIdAsync(id);
+            return result.ToActionResult(this);
+        }
+
+        [HttpGet("{id}/structure")]
+        public async Task<IActionResult> GetStructureById(int id)
+        {
+            var result = await _service.GetStructureByIdAsync(id);
+            return result.ToActionResult(this);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create(CreateCompanyRequest dto)
         {
@@ -32,13 +46,6 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
                 return result.ToActionResult(this);
 
             return CreatedAtAction(nameof(GetById), new { id = result.Data!.Id }, result.Data);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var result = await _service.GetByIdAsync(id);
-            return result.ToActionResult(this);
         }
 
         [HttpPut("{id}")]
