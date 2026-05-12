@@ -61,11 +61,10 @@ namespace CompanyStructure.Application.Employees.Services
                 return ServiceResult<EmployeeResponse>.Fail(ServiceErrors.NotFound<Company>());
             }
 
-            var emailExists = await _db.Employees.AnyAsync(e => e.Email == dto.Email);
-            if (emailExists)
+            var emailValidation = await ValidateEmailIsUniqueAsync(dto.Email);
+            if (!emailValidation.Success)
             {
-                _logger.LogWarning("Email already exists.");
-                return ServiceResult<EmployeeResponse>.Fail(ServiceErrors.EmailAlreadyExists);
+                return ServiceResult<EmployeeResponse>.Fail(emailValidation.Error!);
             }
 
             var employee = dto.Adapt<Employee>();
@@ -87,11 +86,10 @@ namespace CompanyStructure.Application.Employees.Services
                 return ServiceResult<EmployeeResponse>.Fail(ServiceErrors.NotFound<Employee>());
             }
 
-            var emailExists = await _db.Employees.AnyAsync(e => e.Email == dto.Email && e.Id != id);
-            if (emailExists)
+            var emailValidation = await ValidateEmailIsUniqueAsync(dto.Email, id);
+            if (!emailValidation.Success)
             {
-                _logger.LogWarning("Email already exists.");
-                return ServiceResult<EmployeeResponse>.Fail(ServiceErrors.EmailAlreadyExists);
+                return ServiceResult<EmployeeResponse>.Fail(emailValidation.Error!);
             }
 
             dto.Adapt(employee);
@@ -109,29 +107,48 @@ namespace CompanyStructure.Application.Employees.Services
                 _logger.LogWarning("Employee with ID {EmployeeId} not found.", id);
                 return ServiceResult<bool>.Fail(ServiceErrors.NotFound<Employee>());
             }
+
             // Check if the employee is a leader of any node
-            await _db.Companies
-                 .Where(c => c.LeaderId == id)
-                 .ExecuteUpdateAsync(s => s.SetProperty(c => c.LeaderId, (int?)null));
-
-            await _db.Divisions
-                .Where(d => d.LeaderId == id)
-                .ExecuteUpdateAsync(s => s.SetProperty(d => d.LeaderId, (int?)null));
-
-            await _db.Projects
-                .Where(p => p.LeaderId == id)
-                .ExecuteUpdateAsync(s => s.SetProperty(p => p.LeaderId, (int?)null));
-
-            await _db.Departments
-                .Where(d => d.LeaderId == id)
-                .ExecuteUpdateAsync(s => s.SetProperty(d => d.LeaderId, (int?)null));
+            await ClearLeaderReferencesAsync(id);
 
             _db.Employees.Remove(employee);
             await _db.SaveChangesAsync();
 
             _logger.LogInformation("Employee with ID {EmployeeId} deleted successfully.", id);
             return ServiceResult<bool>.Ok(true);
+        }
 
+        private async Task<ServiceResult<bool>> ValidateEmailIsUniqueAsync(string email, int? excludeId = null)
+        {
+            var emailExists = await _db.Employees
+                .AnyAsync(e => e.Email == email && (!excludeId.HasValue || e.Id != excludeId.Value));
+
+            if (emailExists)
+            {
+                _logger.LogWarning("Email already exists.");
+                return ServiceResult<bool>.Fail(ServiceErrors.EmailAlreadyExists);
+            }
+            return ServiceResult<bool>.Ok(true);
+        }
+
+        private async Task ClearLeaderReferencesAsync(int employeeId)
+        {
+            // DB didnt allow to set leaderId to null when deleting employee. So all leader references needs to be cleared before deleting employee.
+            await _db.Companies
+                .Where(c => c.LeaderId == employeeId)
+                .ExecuteUpdateAsync(s => s.SetProperty(c => c.LeaderId, (int?)null));
+
+            await _db.Divisions
+                .Where(d => d.LeaderId == employeeId)
+                .ExecuteUpdateAsync(s => s.SetProperty(d => d.LeaderId, (int?)null));
+
+            await _db.Projects
+                .Where(p => p.LeaderId == employeeId)
+                .ExecuteUpdateAsync(s => s.SetProperty(p => p.LeaderId, (int?)null));
+
+            await _db.Departments
+                .Where(d => d.LeaderId == employeeId)
+                .ExecuteUpdateAsync(s => s.SetProperty(d => d.LeaderId, (int?)null));
         }
     }
 }

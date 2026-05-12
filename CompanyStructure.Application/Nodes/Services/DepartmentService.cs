@@ -9,6 +9,7 @@ using CompanyStructure.Infrastructure.Data;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using static CompanyStructure.Application.Nodes.Validation.NodeValidationService;
 
 namespace CompanyStructure.Application.Nodes.Services
 {
@@ -38,28 +39,19 @@ namespace CompanyStructure.Application.Nodes.Services
         public async Task<ServiceResult<NodeResponse>> CreateAsync(CreateNodeRequest dto, int projectId)
         {
             _logger.LogInformation("Creating department with code {Code} in project {ProjectId}", dto.Code, projectId);
-            var project = await _db.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
+            var context = await GetDepartmentCreateContextAsync(projectId);
+            if (!context.Success)
+                return ServiceResult<NodeResponse>.Fail(context.Error!);
 
-            if (project == null)
-            {
-                _logger.LogWarning("Project with id {ProjectId} does not exist", projectId);
-                return ServiceResult<NodeResponse>.Fail(ServiceErrors.NotFound<Project>());
-            }
+            var createContext = context.Data!;
 
-            var companyId = project.CompanyId;
-            var leaderValidation = await _validation.ValidateLeaderAsync(dto.LeaderId, companyId);
-
-            if (!leaderValidation.Success)
-                return ServiceResult<NodeResponse>.Fail(leaderValidation.Error!);
-
-            var codeValidation = await _validation.ValidateCodeIsUniqueAsync<Department>(dto.Code!, companyId);
-
-            if (!codeValidation.Success)
-                return ServiceResult<NodeResponse>.Fail(codeValidation.Error!);
+            var validation = await _validation.ValidateNodeAsync<Department>(dto.LeaderId, dto.Code, createContext.CompanyId);
+            if (!validation.Success)
+                return ServiceResult<NodeResponse>.Fail(validation.Error!);
 
             var department = dto.Adapt<Department>();
-            department.ProjectId = projectId;
-            department.CompanyId = companyId;
+            department.ProjectId = createContext.ProjectId;
+            department.CompanyId = createContext.CompanyId;
 
             _db.Departments.Add(department);
             await _db.SaveChangesAsync();
@@ -67,6 +59,21 @@ namespace CompanyStructure.Application.Nodes.Services
             _logger.LogInformation("Department with id {DepartmentId} created successfully", department.Id);
             return ServiceResult<NodeResponse>.Ok(
                 department.Adapt<NodeResponse>());
+        }
+
+        private record DepartmentCreateContext(int ProjectId, int CompanyId);
+
+        private async Task<ServiceResult<DepartmentCreateContext>> GetDepartmentCreateContextAsync(int projectId)
+        {
+            var project = await _db.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
+
+            if (project == null)
+            {
+                _logger.LogWarning("Project with id {ProjectId} does not exist.", projectId);
+                return ServiceResult<DepartmentCreateContext>.Fail(ServiceErrors.NotFound<Project>());
+            }
+
+            return ServiceResult<DepartmentCreateContext>.Ok(new DepartmentCreateContext(projectId, project.CompanyId));
         }
     }
 }

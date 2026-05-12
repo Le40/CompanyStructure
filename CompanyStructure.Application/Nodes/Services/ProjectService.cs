@@ -37,28 +37,19 @@ namespace CompanyStructure.Application.Nodes.Services
         public async Task<ServiceResult<NodeResponse>> CreateAsync(CreateNodeRequest dto, int divisionId)
         {
             _logger.LogInformation("Creating project with name {Name} and code {Code} under division {DivisionId}", dto.Name, dto.Code, divisionId);
-            var division = await _db.Divisions.FirstOrDefaultAsync(d => d.Id == divisionId);
+            var context = await GetProjectCreateContextAsync(divisionId);
+            if (!context.Success)
+                return ServiceResult<NodeResponse>.Fail(context.Error!);
 
-            if (division == null)
-            {
-                _logger.LogWarning("Division with id {DivisionId} does not exist", divisionId);
-                return ServiceResult<NodeResponse>.Fail(ServiceErrors.NotFound<Division>());
-            }
+            var createContext = context.Data!;
 
-            var companyId = division.CompanyId; 
-            var leaderValidation = await _validation.ValidateLeaderAsync(dto.LeaderId, companyId);
-
-            if (!leaderValidation.Success)
-                return ServiceResult<NodeResponse>.Fail(leaderValidation.Error!);
-
-            var codeValidation = await _validation.ValidateCodeIsUniqueAsync<Project>(dto.Code!, companyId);
-
-            if (!codeValidation.Success)
-                return ServiceResult<NodeResponse>.Fail(codeValidation.Error!);
+            var validation = await _validation.ValidateNodeAsync<Project>(dto.LeaderId, dto.Code, createContext.CompanyId);
+            if (!validation.Success)
+                return ServiceResult<NodeResponse>.Fail(validation.Error!);
 
             var project = dto.Adapt<Project>();
-            project.DivisionId = divisionId;
-            project.CompanyId = companyId;
+            project.DivisionId = createContext.DivisionId;
+            project.CompanyId = createContext.CompanyId;
 
             _db.Projects.Add(project);
             await _db.SaveChangesAsync();
@@ -66,6 +57,22 @@ namespace CompanyStructure.Application.Nodes.Services
             _logger.LogInformation("Project with id {ProjectId} created successfully", project.Id);
             return ServiceResult<NodeResponse>.Ok(
                 project.Adapt<NodeResponse>());
+        }
+
+        private record ProjectCreateContext(int DivisionId, int CompanyId);
+
+
+        private async Task<ServiceResult<ProjectCreateContext>> GetProjectCreateContextAsync(int divisionId)
+        {
+            var division = await _db.Divisions.FirstOrDefaultAsync(d => d.Id == divisionId);
+
+            if (division == null)
+            {
+                _logger.LogWarning("Division with id {DivisionId} does not exist.", divisionId);
+                return ServiceResult<ProjectCreateContext>.Fail(ServiceErrors.NotFound<Division>());
+            }
+
+            return ServiceResult<ProjectCreateContext>.Ok(new ProjectCreateContext(divisionId, division.CompanyId));
         }
     }
 }

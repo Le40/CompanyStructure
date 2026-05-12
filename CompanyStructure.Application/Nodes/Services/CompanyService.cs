@@ -45,20 +45,12 @@ namespace CompanyStructure.Application.Nodes.Services
         public async Task<ServiceResult<NodeResponse>> CreateAsync(CreateNodeRequest dto)
         {
             _logger.LogInformation("Creating company with name: {Name} and code: {Code}", dto.Name, dto.Code);
-            var codeExists = await _db.Companies
-                .AnyAsync(d => d.Code == dto.Code);
 
-            if (codeExists)
+            var validation = await ValidateCreateAsync(dto);
+            if (!validation.Success)
             {
-                _logger.LogWarning("Failed to create company. Company with code {Code} already exists.", dto.Code);
-                return ServiceResult<NodeResponse>.Fail(ServiceErrors.DuplicateCode<Company>());
-            }
-
-            if (dto.LeaderId != null)
-            {
-                _logger.LogWarning("Failed to create company. Company director cannot be assigned when creating a new company.");
-                return ServiceResult<NodeResponse>.Fail(ServiceErrors.CompanyLeaderCannotBeAssignedOnCreate);
-            }
+                return ServiceResult<NodeResponse>.Fail(validation.Error!);
+            }   
 
             var company = dto.Adapt<Company>();
 
@@ -70,7 +62,6 @@ namespace CompanyStructure.Application.Nodes.Services
                 company.Adapt<NodeResponse>());
         }
 
-
         public async Task<ServiceResult<NodeResponse>> UpdateAsync(int id, UpdateNodeRequest dto)
         {
             var node = await _db.Companies.FindAsync(id);
@@ -81,19 +72,10 @@ namespace CompanyStructure.Application.Nodes.Services
                 return ServiceResult<NodeResponse>.Fail(ServiceErrors.NotFound<Company>());
             }
 
-            var leaderValidation = await _validation.ValidateLeaderAsync(dto.LeaderId, id);
-
-            if (!leaderValidation.Success)
+            var validation = await ValidateUpdateAsync(dto, id);
+            if (!validation.Success)
             {
-                return ServiceResult<NodeResponse>.Fail(leaderValidation.Error!);
-            }
-            var codeExists = await _db.Companies
-                .AnyAsync(d => d.Code == dto.Code && d.Id != id);
-
-            if (codeExists)
-            {
-                _logger.LogWarning("Failed to update company. Company with code {Code} already exists.", dto.Code);
-                return ServiceResult<NodeResponse>.Fail(ServiceErrors.DuplicateCode<Company>());
+                return ServiceResult<NodeResponse>.Fail(validation.Error!);
             }
 
             dto.Adapt(node);
@@ -116,5 +98,38 @@ namespace CompanyStructure.Application.Nodes.Services
             _logger.LogInformation("Company with id {Id} deleted successfully.", id);
             return ServiceResult<bool>.Ok(true);
         }
-    }
+
+        private async Task<ServiceResult<bool>> ValidateCreateAsync(CreateNodeRequest dto)
+        {
+            if (dto.LeaderId != null)
+            {
+                _logger.LogWarning("Failed to create company. Company director cannot be assigned when creating a new company.");
+                return ServiceResult<bool>.Fail(ServiceErrors.CompanyLeaderCannotBeAssignedOnCreate);
+            }
+
+            var codeExists = await _db.Companies.AnyAsync(d => d.Code == dto.Code);
+            if (codeExists)
+            {
+                _logger.LogWarning("Failed to create company. Company with code {Code} already exists.", dto.Code);
+                return ServiceResult<bool>.Fail(ServiceErrors.DuplicateCode<Company>());
+            }
+            return ServiceResult<bool>.Ok(true);
+        }
+
+        private async Task<ServiceResult<bool>> ValidateUpdateAsync(UpdateNodeRequest dto, int id)
+        {
+            var leaderValidation = await _validation.ValidateLeaderAsync<Company>(dto.LeaderId, id);
+
+            if (!leaderValidation.Success)
+                return leaderValidation;
+
+            var codeExists = await _db.Companies.AnyAsync(d => d.Code == dto.Code);
+            if (codeExists)
+            {
+                _logger.LogWarning("Failed to create company. Company with code {Code} already exists.", dto.Code);
+                return ServiceResult<bool>.Fail(ServiceErrors.DuplicateCode<Company>());
+            }
+            return ServiceResult<bool>.Ok(true);
+        }
+    }   
 }

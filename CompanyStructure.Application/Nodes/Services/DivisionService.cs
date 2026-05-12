@@ -37,23 +37,13 @@ namespace CompanyStructure.Application.Nodes.Services
         public async Task<ServiceResult<NodeResponse>> CreateAsync(CreateNodeRequest dto, int companyId)
         {
             _logger.LogInformation("Creating division with name {Name} and code {Code} for company {CompanyId}", dto.Name, dto.Code, companyId);
-            var companyExists = await _db.Companies.AnyAsync(c => c.Id == companyId);
+            var context = await GetDivisionCreateContextAsync(companyId);
+            if (!context.Success)
+                return ServiceResult<NodeResponse>.Fail(context.Error!);
 
-            if (!companyExists)
-            {
-                _logger.LogWarning("Company with id {CompanyId} does not exist", companyId);
-                return ServiceResult<NodeResponse>.Fail(ServiceErrors.NotFound<Company>());
-            }
-
-            var leaderValidation = await _validation.ValidateLeaderAsync(dto.LeaderId, companyId);
-
-            if (!leaderValidation.Success)
-                return ServiceResult<NodeResponse>.Fail(leaderValidation.Error!);
-
-            var codeValidation = await _validation.ValidateCodeIsUniqueAsync<Division>(dto.Code!,companyId);
-
-            if (!codeValidation.Success)
-                return ServiceResult<NodeResponse>.Fail(codeValidation.Error!);
+            var validation = await _validation.ValidateNodeAsync<Division>(dto.LeaderId, dto.Code, companyId);
+            if (!validation.Success)
+                return ServiceResult<NodeResponse>.Fail(validation.Error!);
 
             var division = dto.Adapt<Division>();
             division.CompanyId = companyId;
@@ -64,6 +54,19 @@ namespace CompanyStructure.Application.Nodes.Services
             _logger.LogInformation("Division with id {DivisionId} created successfully", division.Id);
             return ServiceResult<NodeResponse>.Ok(
                 division.Adapt<NodeResponse>());
+        }
+
+        private async Task<ServiceResult<bool>> GetDivisionCreateContextAsync(int companyId)
+        {
+            var companyExists = await _db.Companies.AnyAsync(c => c.Id == companyId);
+
+            if (!companyExists)
+            {
+                _logger.LogWarning("Company with id {CompanyId} does not exist", companyId);
+                return ServiceResult<bool>.Fail(ServiceErrors.NotFound<Company>());
+            }
+
+            return ServiceResult<bool>.Ok(true);
         }
     }
 }

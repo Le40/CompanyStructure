@@ -4,6 +4,7 @@ using CompanyStructure.Application.Nodes.Validation;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
 using Mapster;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace CompanyStructure.Application.Nodes.Services
@@ -43,18 +44,10 @@ namespace CompanyStructure.Application.Nodes.Services
                 _logger.LogWarning("{NodeType} with id {NodeId} not found for update", _nodeTypeName, id);
                 return ServiceResult<NodeResponse>.Fail(ServiceErrors.NotFound<T>());
             }
-            var codeValidation = await _validation.ValidateCodeIsUniqueAsync<T>(
-                dto.Code!,
-                node.CompanyId,
-                excludeId: id);
 
-            if (!codeValidation.Success)
-                return ServiceResult<NodeResponse>.Fail(codeValidation.Error!);
-
-            var leaderValidation = await _validation.ValidateLeaderAsync(dto.LeaderId, node.CompanyId);
-
-            if (!leaderValidation.Success)
-                return ServiceResult<NodeResponse>.Fail(leaderValidation.Error!);
+            var validation = await _validation.ValidateNodeAsync<T>(dto.LeaderId, dto.Code, node.CompanyId, excludeId: node.Id);
+            if (!validation.Success)
+                return ServiceResult<NodeResponse>.Fail(validation.Error!);
 
             dto.Adapt(node);
             await _db.SaveChangesAsync();

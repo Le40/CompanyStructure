@@ -20,7 +20,7 @@
         public static ServiceError DuplicateCode<T>() =>
             new($"{typeof(T).Name}.DuplicateCode", ServiceErrorType.Conflict, $"{typeof(T).Name} code already exists.");
 
-        public static ServiceError LeaderIsNotEmployee<T>() =>
-            new($"{typeof(T).Name}.LeaderIsNotEmployee", ServiceErrorType.Validation, $"Leader of {typeof(T).Name} must be an employee of the same company.");
+        public static ServiceError InvalidLeader<T>() =>
+            new($"{typeof(T).Name}.InvalidLeader", ServiceErrorType.Validation, $"Leader of {typeof(T).Name} must be an employee of the same company.");
     }
 }
