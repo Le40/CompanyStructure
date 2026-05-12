@@ -1,8 +1,11 @@
 <Solution>
   <Folder Name="/src/">
+    <File Path="docker-compose.yml" />
+    <File Path="README.md" />
     <Project Path="CompanyStructure.Application/CompanyStructure.Application.csproj" />
     <Project Path="CompanyStructure.Domain/CompanyStructure.Domain.csproj" />
     <Project Path="CompanyStructure.Infrastructure/CompanyStructure.Infrastructure.csproj" />
+    <Project Path="CompanyStructure.IntegrationTests/CompanyStructure.IntegrationTests.csproj" Id="9a35513e-6d49-4d86-9a79-4c08c91baebe" />
     <Project Path="CompanyStructure.WebAPI/CompanyStructure.WebAPI.csproj" />
   </Folder>
   <Folder Name="/src/Database/">
@@ -13,5 +16,4 @@
     <File Path="Tests/company-structure.http" />
     <File Path="Tests/env.json" />
   </Folder>
-  <Project Path="CompanyStructure.IntegrationTests/CompanyStructure.IntegrationTests.csproj" Id="9a35513e-6d49-4d86-9a79-4c08c91baebe" />
 </Solution>

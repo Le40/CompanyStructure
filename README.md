@@ -9,6 +9,8 @@ The API supports:
 - SQL Server database storage
 - Scalar API documentation
 - TeaPie API tests
+- xUnit integration tests
+- GitHub Actions CI pipeline
 
 ## Notes
 - API uses DTOs for request and response models.
@@ -26,7 +28,10 @@ The API supports:
 
 ## Prerequisites
 
-Before running the project, install:
+Recommended:
+- Docker Desktop
+
+For local development without Docker:
 
 - .NET 10 SDK
 - Microsoft SQL Server / SQL Server Express
@@ -45,6 +50,34 @@ dotnet tool install -g TeaPie.Tool
 git clone https://github.com/Le40/CompanyStructure
 cd CompanyStructure
 ```
+### Option A. Run with Docker, recommended
+
+Make sure Docker Desktop is running.
+
+From the solution root, run:
+
+```powershell
+docker compose up --build
+```
+The API will be available at:
+```
+http://localhost:8080/scalar
+```
+Docker Compose starts both:
+
+the Web API
+SQL Server database
+
+EF Core migrations are applied automatically on startup.
+
+To stop Docker containers
+
+```powershell
+docker compose down
+```
+
+
+### Option B. Run locally without Docker
 ### 2. Configure database connection
 Open
 ```
@@ -77,17 +110,23 @@ dotnet run --project .\CompanyStructure.WebAPI
 ```
 By default, the API runs on:
 ```
-http://localhost:5002
+http://localhost:8080
 ```
 
 ### API Documentation
 ```
-http://localhost:5002/scalar
+http://localhost:8080/scalar
 ```
 or https:
 ```
 https://localhost:7150/scalar
 ```
+### Running automated tests
+
+```powershell
+dotnet test
+```
+
 ### Running TeaPie tests
 Tests are located in:
 ```
@@ -109,7 +148,7 @@ to configure the base API URL. If your API runs on a different port, update:
 ```json
 {
   "$shared": {
-    "baseUrl": "http://localhost:5002"
+    "baseUrl": "http://localhost:8080"
   }
 }
 ```
