@@ -1,15 +1,16 @@
-﻿using CompanyStructure.Application.Common.Extensions;
+﻿using CompanyStructure.Infrastructure.Extensions;
 using CompanyStructure.Application.Common.Pagination;
 using CompanyStructure.Application.Common.ServiceResult;
 using CompanyStructure.Application.Nodes.Interfaces;
-using CompanyStructure.Application.Nodes.Validation;
+using CompanyStructure.Application.Nodes.Interfaces.Validation;
+using CompanyStructure.Application.Nodes.DTOs;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace CompanyStructure.Application.Nodes.Services
+namespace CompanyStructure.Infrastructure.Services.Nodes
 {
     public class ProjectService : NodeService<Project>, IProjectService
     {

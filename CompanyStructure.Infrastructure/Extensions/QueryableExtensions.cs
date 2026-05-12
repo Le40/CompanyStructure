@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Mapster;
 
-namespace CompanyStructure.Application.Common.Extensions
+namespace CompanyStructure.Infrastructure.Extensions
 {
     public static class QueryableExtensions
     {

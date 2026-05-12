@@ -1,4 +1,6 @@
 ﻿using CompanyStructure.Application.Common.ServiceResult;
+using CompanyStructure.Application.Nodes.Interfaces.Validation;
+using CompanyStructure.Application.Nodes.DTOs;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -6,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 
-namespace CompanyStructure.Application.Nodes.Validation
+namespace CompanyStructure.Infrastructure.Services.Nodes.Validation
 {
     public class NodeValidationService : INodeValidationService
     {

@@ -1,4 +1,4 @@
-﻿namespace CompanyStructure.Application.Employees
+﻿namespace CompanyStructure.Application.Employees.DTOs
 {
     public class EmployeeResponse
     {

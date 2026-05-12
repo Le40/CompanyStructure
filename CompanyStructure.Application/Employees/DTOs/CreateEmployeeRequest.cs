@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CompanyStructure.Application.Employees
+namespace CompanyStructure.Application.Employees.DTOs
 {
-    public class UpdateEmployeeRequest
+    public class CreateEmployeeRequest
     {
+        //[Required(ErrorMessage = "Company is required.")]
+        //public int CompanyId { get; set; }
         [MaxLength(25)]
         public string? Degree { get; set; }
         [Required(ErrorMessage = "First name is required.")]

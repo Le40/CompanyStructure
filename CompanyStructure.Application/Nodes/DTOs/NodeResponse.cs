@@ -1,4 +1,4 @@
-﻿namespace CompanyStructure.Application.Nodes
+﻿namespace CompanyStructure.Application.Nodes.DTOs
 {
     public class NodeResponse
     {

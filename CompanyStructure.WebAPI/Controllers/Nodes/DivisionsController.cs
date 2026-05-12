@@ -1,5 +1,5 @@
 ﻿using CompanyStructure.Application.Common.Pagination;
-using CompanyStructure.Application.Nodes;
+using CompanyStructure.Application.Nodes.DTOs;
 using CompanyStructure.Application.Nodes.Interfaces;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.WebAPI.Helpers;

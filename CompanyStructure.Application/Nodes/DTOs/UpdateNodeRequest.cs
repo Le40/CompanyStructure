@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CompanyStructure.Application.Nodes
+namespace CompanyStructure.Application.Nodes.DTOs
 {
     public class UpdateNodeRequest
     {

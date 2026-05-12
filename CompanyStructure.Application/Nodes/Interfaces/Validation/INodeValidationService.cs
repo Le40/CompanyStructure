@@ -1,7 +1,7 @@
 ﻿using CompanyStructure.Application.Common.ServiceResult;
 using CompanyStructure.Domain.Models;
 
-namespace CompanyStructure.Application.Nodes.Validation
+namespace CompanyStructure.Application.Nodes.Interfaces.Validation
 {
     public interface INodeValidationService
     {

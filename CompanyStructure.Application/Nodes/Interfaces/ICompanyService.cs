@@ -1,5 +1,6 @@
 ﻿using CompanyStructure.Application.Common.Pagination;
 using CompanyStructure.Application.Common.ServiceResult;
+using CompanyStructure.Application.Nodes.DTOs;
 
 namespace CompanyStructure.Application.Nodes.Interfaces
 {

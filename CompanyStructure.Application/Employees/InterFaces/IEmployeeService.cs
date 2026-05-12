@@ -1,7 +1,8 @@
 ﻿using CompanyStructure.Application.Common.Pagination;
 using CompanyStructure.Application.Common.ServiceResult;
+using CompanyStructure.Application.Employees.DTOs;  
 
-namespace CompanyStructure.Application.Employees.InterFaces
+namespace CompanyStructure.Application.Employees.Interfaces
 {
     public interface IEmployeeService
     {

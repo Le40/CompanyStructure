@@ -1,14 +1,16 @@
 ﻿using CompanyStructure.Application.Common.Pagination;
 using CompanyStructure.Application.Common.ServiceResult;
-using CompanyStructure.Application.Common.Extensions;
-using CompanyStructure.Application.Employees.InterFaces;
+using CompanyStructure.Infrastructure.Extensions;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using CompanyStructure.Application.Employees.Interfaces;
+using CompanyStructure.Application.Employees.DTOs;
 
-namespace CompanyStructure.Application.Employees.Services
+
+namespace CompanyStructure.Infrastructure.Services.Employees
 {
     public class EmployeeService : IEmployeeService
     {

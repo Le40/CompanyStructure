@@ -1,13 +1,14 @@
 ﻿using CompanyStructure.Application.Common.ServiceResult;
 using CompanyStructure.Application.Nodes.Interfaces;
-using CompanyStructure.Application.Nodes.Validation;
+using CompanyStructure.Application.Nodes.Interfaces.Validation;
+using CompanyStructure.Application.Nodes.DTOs;
 using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace CompanyStructure.Application.Nodes.Services
+namespace CompanyStructure.Infrastructure.Services.Nodes
 {
     // Base service for organisation nodes (Division, Project, Department), contains common methods for getting by id, updating and deleting nodes.
     public class NodeService<T> : INodeService<T> 

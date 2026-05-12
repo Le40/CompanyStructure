@@ -1,4 +1,5 @@
 ﻿using CompanyStructure.Application.Common.ServiceResult;
+using CompanyStructure.Application.Nodes.DTOs;
 using CompanyStructure.Domain.Models;
 
 namespace CompanyStructure.Application.Nodes.Interfaces
