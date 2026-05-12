@@ -13,4 +13,5 @@
     <File Path="Tests/company-structure.http" />
     <File Path="Tests/env.json" />
   </Folder>
+  <Project Path="CompanyStructure.IntegrationTests/CompanyStructure.IntegrationTests.csproj" Id="9a35513e-6d49-4d86-9a79-4c08c91baebe" />
 </Solution>
