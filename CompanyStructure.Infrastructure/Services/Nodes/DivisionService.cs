@@ -38,9 +38,13 @@ namespace CompanyStructure.Infrastructure.Services.Nodes
         public async Task<ServiceResult<NodeResponse>> CreateAsync(CreateNodeRequest dto, int companyId)
         {
             _logger.LogInformation("Creating division with name {Name} and code {Code} for company {CompanyId}", dto.Name, dto.Code, companyId);
-            var context = await GetDivisionCreateContextAsync(companyId);
-            if (!context.Success)
-                return ServiceResult<NodeResponse>.Fail(context.Error!);
+            var companyExists = await _db.Companies.AnyAsync(c => c.Id == companyId);
+
+            if (!companyExists)
+            {
+                _logger.LogWarning("Company with id {CompanyId} does not exist", companyId);
+                return ServiceResult<NodeResponse>.Fail(ServiceErrors.NotFound<Company>());
+            }
 
             var validation = await _validation.ValidateNodeAsync<Division>(dto.LeaderId, dto.Code, companyId);
             if (!validation.Success)

@@ -21,22 +21,6 @@ namespace CompanyStructure.Infrastructure.Services.Nodes.Validation
             _logger = logger;   
         }
 
-        public record ProjectCreateContext(int divisionId, int companyId);
-
-
-        public async Task<ServiceResult<ProjectCreateContext>> GetProjectCreateContextAsync(int divisionId)
-        {
-            var division = await _db.Divisions.FirstOrDefaultAsync(d => d.Id == divisionId);
-
-            if (division == null)
-            {
-                _logger.LogWarning("Division with id {DivisionId} does not exist.", divisionId);
-                return ServiceResult<ProjectCreateContext>.Fail(ServiceErrors.NotFound<Division>());
-            }
-
-            return ServiceResult<ProjectCreateContext>.Ok(new ProjectCreateContext(divisionId, division.CompanyId));
-        }
-
         public async Task<ServiceResult<bool>> ValidateNodeAsync<T>(int? leaderId, string code, int companyId, int? excludeId = null)
             where T : class, INode
         {

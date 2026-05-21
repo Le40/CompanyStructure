@@ -40,19 +40,22 @@ namespace CompanyStructure.Infrastructure.Services.Nodes
         public async Task<ServiceResult<NodeResponse>> CreateAsync(CreateNodeRequest dto, int projectId)
         {
             _logger.LogInformation("Creating department with code {Code} in project {ProjectId}", dto.Code, projectId);
-            var context = await GetDepartmentCreateContextAsync(projectId);
-            if (!context.Success)
-                return ServiceResult<NodeResponse>.Fail(context.Error!);
 
-            var createContext = context.Data!;
+            var project = await _db.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
 
-            var validation = await _validation.ValidateNodeAsync<Department>(dto.LeaderId, dto.Code, createContext.CompanyId);
+            if (project == null)
+            {
+                _logger.LogWarning("Project with id {ProjectId} does not exist.", projectId);
+                return ServiceResult<NodeResponse>.Fail(ServiceErrors.NotFound<Project>());
+            }
+
+            var validation = await _validation.ValidateNodeAsync<Department>(dto.LeaderId, dto.Code, project.CompanyId);
             if (!validation.Success)
                 return ServiceResult<NodeResponse>.Fail(validation.Error!);
 
             var department = dto.Adapt<Department>();
-            department.ProjectId = createContext.ProjectId;
-            department.CompanyId = createContext.CompanyId;
+            department.ProjectId = project.Id;
+            department.CompanyId = project.CompanyId;
 
             _db.Departments.Add(department);
             await _db.SaveChangesAsync();
@@ -61,20 +64,5 @@ namespace CompanyStructure.Infrastructure.Services.Nodes
             return ServiceResult<NodeResponse>.Ok(
                 department.Adapt<NodeResponse>());
         }
-
-        private record DepartmentCreateContext(int ProjectId, int CompanyId);
-
-        private async Task<ServiceResult<DepartmentCreateContext>> GetDepartmentCreateContextAsync(int projectId)
-        {
-            var project = await _db.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
-
-            if (project == null)
-            {
-                _logger.LogWarning("Project with id {ProjectId} does not exist.", projectId);
-                return ServiceResult<DepartmentCreateContext>.Fail(ServiceErrors.NotFound<Project>());
-            }
-
-            return ServiceResult<DepartmentCreateContext>.Ok(new DepartmentCreateContext(projectId, project.CompanyId));
-        }
-    }
+   }
 }

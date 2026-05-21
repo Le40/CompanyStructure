@@ -38,19 +38,21 @@ namespace CompanyStructure.Infrastructure.Services.Nodes
         public async Task<ServiceResult<NodeResponse>> CreateAsync(CreateNodeRequest dto, int divisionId)
         {
             _logger.LogInformation("Creating project with name {Name} and code {Code} under division {DivisionId}", dto.Name, dto.Code, divisionId);
-            var context = await GetProjectCreateContextAsync(divisionId);
-            if (!context.Success)
-                return ServiceResult<NodeResponse>.Fail(context.Error!);
+            var division = await _db.Divisions.FirstOrDefaultAsync(d => d.Id == divisionId);
 
-            var createContext = context.Data!;
+            if (division == null)
+            {
+                _logger.LogWarning("Division with id {DivisionId} does not exist.", divisionId);
+                return ServiceResult<NodeResponse>.Fail(ServiceErrors.NotFound<Division>());
+            }
 
-            var validation = await _validation.ValidateNodeAsync<Project>(dto.LeaderId, dto.Code, createContext.CompanyId);
+            var validation = await _validation.ValidateNodeAsync<Project>(dto.LeaderId, dto.Code, division.CompanyId);
             if (!validation.Success)
                 return ServiceResult<NodeResponse>.Fail(validation.Error!);
 
             var project = dto.Adapt<Project>();
-            project.DivisionId = createContext.DivisionId;
-            project.CompanyId = createContext.CompanyId;
+            project.DivisionId = division.Id;
+            project.CompanyId = division.CompanyId;
 
             _db.Projects.Add(project);
             await _db.SaveChangesAsync();
@@ -58,22 +60,6 @@ namespace CompanyStructure.Infrastructure.Services.Nodes
             _logger.LogInformation("Project with id {ProjectId} created successfully", project.Id);
             return ServiceResult<NodeResponse>.Ok(
                 project.Adapt<NodeResponse>());
-        }
-
-        private record ProjectCreateContext(int DivisionId, int CompanyId);
-
-
-        private async Task<ServiceResult<ProjectCreateContext>> GetProjectCreateContextAsync(int divisionId)
-        {
-            var division = await _db.Divisions.FirstOrDefaultAsync(d => d.Id == divisionId);
-
-            if (division == null)
-            {
-                _logger.LogWarning("Division with id {DivisionId} does not exist.", divisionId);
-                return ServiceResult<ProjectCreateContext>.Fail(ServiceErrors.NotFound<Division>());
-            }
-
-            return ServiceResult<ProjectCreateContext>.Ok(new ProjectCreateContext(divisionId, division.CompanyId));
         }
     }
 }
