@@ -1,4 +1,5 @@
 ﻿using CompanyStructure.Infrastructure.Data;
+using CompanyStructure.IntegrationTests.Helpers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -8,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace CompanyStructure.IntegrationTests.Helpers;
+namespace CompanyStructure.IntegrationTests.Factories;
 
 public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
@@ -32,7 +33,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                 options.UseSqlite(_connection);
             });
 
-            services.AddAuthentication(TestAuthHandler.SchemeName)
+            /*services.AddAuthentication(TestAuthHandler.SchemeName)
                 .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                     TestAuthHandler.SchemeName,
                     options => { });
@@ -41,7 +42,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             {
                 options.DefaultAuthenticateScheme = TestAuthHandler.SchemeName;
                 options.DefaultChallengeScheme = TestAuthHandler.SchemeName;
-            });
+            });*/
 
             var serviceProvider = services.BuildServiceProvider();
 

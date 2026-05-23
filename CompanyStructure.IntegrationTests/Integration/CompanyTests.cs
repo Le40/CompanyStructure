@@ -1,5 +1,6 @@
 ﻿using CompanyStructure.Application.Employees.DTOs;
 using CompanyStructure.Application.Nodes.DTOs;
+using CompanyStructure.IntegrationTests.Factories;
 using CompanyStructure.IntegrationTests.Helpers;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,14 +10,14 @@ using System.Net.Http.Json;
 
 namespace CompanyStructure.IntegrationTests;
 
-public class CompanyTests : IClassFixture<CustomWebApplicationFactory>
+public class CompanyTests : IClassFixture<AuthenticatedCustomWebApplicationFactory>
 {
-    private readonly CustomWebApplicationFactory _factory;
+    private readonly AuthenticatedCustomWebApplicationFactory _factory;
     private readonly HttpClient _client;
     private readonly TestApiClient _apiClient;
     private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
 
-    public CompanyTests(CustomWebApplicationFactory factory)
+    public CompanyTests(AuthenticatedCustomWebApplicationFactory factory)
     {
         _client = factory.CreateClient();
         _factory = factory;
