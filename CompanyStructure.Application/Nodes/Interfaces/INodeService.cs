@@ -8,6 +8,6 @@ namespace CompanyStructure.Application.Nodes.Interfaces
     {
         Task<ServiceResult<NodeResponse?>> GetByIdAsync(int id);
         Task<ServiceResult<NodeResponse>> UpdateAsync(int id, UpdateNodeRequest dto);
-        Task<ServiceResult<bool>> DeleteAsync(int id);
+        Task<ServiceResult> DeleteAsync(int id);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using CompanyStructure.Application.Employees.DTOs;
 using CompanyStructure.Application.Nodes.DTOs;
+using CompanyStructure.Domain.Models;
 using CompanyStructure.IntegrationTests.Factories;
 using CompanyStructure.IntegrationTests.Helpers;
 using FluentAssertions;
@@ -141,8 +142,9 @@ public class EmployeeTests : IClassFixture<AuthenticatedCustomWebApplicationFact
         using var scope = _factory.Services.CreateScope();
         var seeder = scope.ServiceProvider.GetRequiredService<TestDataSeeder>();
 
-        var division = await seeder.SeedDivisionAsync(cancellationToken: _cancellationToken);
-        var employee = await seeder.SeedEmployeeAsync(division.CompanyId, cancellationToken: _cancellationToken);
+        var company = await seeder.SeedCompanyAsync(cancellationToken: _cancellationToken);
+        var employee = await seeder.SeedEmployeeAsync(company.Id, cancellationToken: _cancellationToken);
+        var division = await seeder.SeedDivisionAsync(company.Id, leaderId: employee.Id, cancellationToken: _cancellationToken);
 
         /*var company = await _apiClient.CreateCompanyAsync();
         var employee = await _apiClient.CreateEmployeeAsync(company.Id);

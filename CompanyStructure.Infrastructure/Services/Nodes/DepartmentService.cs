@@ -28,7 +28,7 @@ namespace CompanyStructure.Infrastructure.Services.Nodes
         {
             var nodeExists = await _db.Projects.AnyAsync(n => n.Id == projectId);
             if (!nodeExists)
-                return ServiceResult<PagedResult<NodeResponse>>.Fail(ServiceErrors.NotFound<Project>());
+                return ServiceResult<PagedResult<NodeResponse>>.Fail(ServiceErrors.NotFound<Project>(projectId));
 
             var departments = await _db.Departments
                 .Where(d => d.ProjectId == projectId)
@@ -46,7 +46,7 @@ namespace CompanyStructure.Infrastructure.Services.Nodes
             if (project == null)
             {
                 _logger.LogWarning("Project with id {ProjectId} does not exist.", projectId);
-                return ServiceResult<NodeResponse>.Fail(ServiceErrors.NotFound<Project>());
+                return ServiceResult<NodeResponse>.Fail(ServiceErrors.NotFound<Project>(projectId));
             }
 
             var validation = await _validation.ValidateNodeAsync<Department>(dto.LeaderId, dto.Code, project.CompanyId);

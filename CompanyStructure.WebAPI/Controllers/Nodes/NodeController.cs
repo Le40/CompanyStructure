@@ -40,10 +40,7 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _nodeService.DeleteAsync(id);
-            if (!result.Success)
-                return result.ToActionResult(this);
-
-            return NoContent();
+            return result.ToActionResult(this);
         }
     }
 }

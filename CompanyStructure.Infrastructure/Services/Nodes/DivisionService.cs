@@ -26,7 +26,7 @@ namespace CompanyStructure.Infrastructure.Services.Nodes
         {
             var nodeExists = await _db.Companies.AnyAsync(n => n.Id == companyId);
             if (!nodeExists)
-                return ServiceResult<PagedResult<NodeResponse>>.Fail(ServiceErrors.NotFound<Company>());
+                return ServiceResult<PagedResult<NodeResponse>>.Fail(ServiceErrors.NotFound<Company>(companyId));
 
             var divisions = await _db.Divisions
                 .Where(d => d.CompanyId == companyId)
@@ -43,7 +43,7 @@ namespace CompanyStructure.Infrastructure.Services.Nodes
             if (!companyExists)
             {
                 _logger.LogWarning("Company with id {CompanyId} does not exist", companyId);
-                return ServiceResult<NodeResponse>.Fail(ServiceErrors.NotFound<Company>());
+                return ServiceResult<NodeResponse>.Fail(ServiceErrors.NotFound<Company>(companyId));
             }
 
             var validation = await _validation.ValidateNodeAsync<Division>(dto.LeaderId, dto.Code, companyId);
@@ -68,7 +68,7 @@ namespace CompanyStructure.Infrastructure.Services.Nodes
             if (!companyExists)
             {
                 _logger.LogWarning("Company with id {CompanyId} does not exist", companyId);
-                return ServiceResult<bool>.Fail(ServiceErrors.NotFound<Company>());
+                return ServiceResult<bool>.Fail(ServiceErrors.NotFound<Company>(companyId));
             }
 
             return ServiceResult<bool>.Ok(true);

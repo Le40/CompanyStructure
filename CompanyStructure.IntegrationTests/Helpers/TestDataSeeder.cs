@@ -1,5 +1,6 @@
 ﻿using CompanyStructure.Domain.Models;
 using CompanyStructure.Infrastructure.Data;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace CompanyStructure.IntegrationTests.Helpers
 {
@@ -35,12 +36,13 @@ namespace CompanyStructure.IntegrationTests.Helpers
             return new SeedCompany(company.Id, company.Code);
         }
 
-        public async Task<SeedEmployee> SeedEmployeeAsync(int? companyId, string? email = null,
+        public async Task<SeedEmployee> SeedEmployeeAsync(int? companyId = null, string? email = null,
             CancellationToken cancellationToken = default)
         {
             var seed = await SeedCompanyAsync(); 
 
             var unique = Guid.NewGuid().ToString("N")[..8];
+            var compId = companyId ?? seed.Id;
 
             var employee = new Employee
             {
@@ -48,22 +50,23 @@ namespace CompanyStructure.IntegrationTests.Helpers
                 Surname = "Doe",
                 Email = email ?? $"john.doe.{unique}@test.com",
                 PhoneNumber = "+421900123456",
-                CompanyId = seed.Id
+                CompanyId = compId
             };
 
             _db.Employees.Add(employee);
             await _db.SaveChangesAsync(cancellationToken);
 
-            return new SeedEmployee(employee.Id, seed.Id, employee.Email);
+            return new SeedEmployee(employee.Id, compId, employee.Email);
         }
 
         public async Task<SeedNode> SeedDivisionAsync(
+            int companyId,
             string? name = null,
             string? code = null,
              int? leaderId = null,
             CancellationToken cancellationToken = default)
         {
-            var seed = await SeedCompanyAsync();
+            //var seed = await SeedCompanyAsync();
 
             var unique = Guid.NewGuid().ToString("N")[..8];
 
@@ -72,7 +75,7 @@ namespace CompanyStructure.IntegrationTests.Helpers
                 Name = name ?? $"IT Division {unique}",
                 Code = code ?? $"DIV-{unique}",
                 LeaderId = leaderId,
-                CompanyId = seed.Id
+                CompanyId = companyId
             };
   
 
@@ -83,12 +86,13 @@ namespace CompanyStructure.IntegrationTests.Helpers
         }
 
         public async Task<SeedNode> SeedProjectAsync(
+            int companyId,
             string? name = null,
             string? code = null,
              int? leaderId = null,
             CancellationToken cancellationToken = default)
         {
-            var seed = await SeedDivisionAsync();
+            var seed = await SeedDivisionAsync(companyId);
 
             var unique = Guid.NewGuid().ToString("N")[..8];
 
@@ -97,7 +101,7 @@ namespace CompanyStructure.IntegrationTests.Helpers
                 Name = name ?? $"ITP Project {unique}",
                 Code = code ?? $"PRJ-{unique}",
                 LeaderId = leaderId,
-                CompanyId = seed.CompanyId,
+                CompanyId = companyId,
                 DivisionId = seed.Id
             };
 
@@ -108,12 +112,13 @@ namespace CompanyStructure.IntegrationTests.Helpers
         }
 
         public async Task<SeedNode> SeedDepartmentAsync(
+            int companyId,
             string? name = null,
             string? code = null,
              int? leaderId = null,
             CancellationToken cancellationToken = default)
         {
-            var seed = await SeedProjectAsync();
+            var seed = await SeedProjectAsync(companyId);
 
             var unique = Guid.NewGuid().ToString("N")[..8];
 
@@ -122,7 +127,7 @@ namespace CompanyStructure.IntegrationTests.Helpers
                 Name = name ?? $"ITP Project {unique}",
                 Code = code ?? $"PRJ-{unique}",
                 LeaderId = leaderId,
-                CompanyId = seed.CompanyId,
+                CompanyId = companyId,
                 ProjectId = seed.Id
             };
 

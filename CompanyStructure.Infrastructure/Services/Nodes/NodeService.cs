@@ -31,7 +31,7 @@ namespace CompanyStructure.Infrastructure.Services.Nodes
             var node = await _db.Set<T>().FindAsync(id);
             if (node == null)
             {
-                return ServiceResult<NodeResponse?>.Fail(ServiceErrors.NotFound<T>());
+                return ServiceResult<NodeResponse?>.Fail(ServiceErrors.NotFound<T>(id));
             }
             return ServiceResult<NodeResponse?>.Ok(node.Adapt<NodeResponse>());
         }
@@ -43,7 +43,7 @@ namespace CompanyStructure.Infrastructure.Services.Nodes
             if (node == null)
             {
                 _logger.LogWarning("{NodeType} with id {NodeId} not found for update", _nodeTypeName, id);
-                return ServiceResult<NodeResponse>.Fail(ServiceErrors.NotFound<T>());
+                return ServiceResult<NodeResponse>.Fail(ServiceErrors.NotFound<T>(id));
             }
 
             var validation = await _validation.ValidateNodeAsync<T>(dto.LeaderId, dto.Code, node.CompanyId, excludeId: node.Id);
@@ -57,19 +57,19 @@ namespace CompanyStructure.Infrastructure.Services.Nodes
             return ServiceResult<NodeResponse>.Ok(node.Adapt<NodeResponse>());
         }
 
-        public async Task<ServiceResult<bool>> DeleteAsync(int id)
+        public async Task<ServiceResult> DeleteAsync(int id)
         {
             var node = await _db.Set<T>().FindAsync(id);
             if (node == null)
             {
                 _logger.LogWarning("{NodeType} with id {NodeId} not found for deletion", _nodeTypeName, id);
-                return ServiceResult<bool>.Fail(ServiceErrors.NotFound<T>());
+                return ServiceResult.Fail(ServiceErrors.NotFound<T>(id));
             }
             _db.Set<T>().Remove(node);
             await _db.SaveChangesAsync();
 
             _logger.LogInformation("{NodeType} with id {NodeId} deleted successfully", _nodeTypeName, id);
-            return ServiceResult<bool>.Ok(true);
+            return ServiceResult.Ok();
         }
     }
 }

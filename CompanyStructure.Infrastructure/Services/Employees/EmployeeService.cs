@@ -28,7 +28,7 @@ namespace CompanyStructure.Infrastructure.Services.Employees
             var companyExists = await _db.Companies.AnyAsync(c => c.Id == companyId);
             if (!companyExists)
             {
-                return ServiceResult<PagedResult<EmployeeResponse>>.Fail(ServiceErrors.CompanyNotFound);
+                return ServiceResult<PagedResult<EmployeeResponse>>.Fail(ServiceErrors.CompanyNotFound(companyId));
             }
 
             var employees = await _db.Employees
@@ -47,7 +47,7 @@ namespace CompanyStructure.Infrastructure.Services.Employees
 
             if (employee == null)
             {
-                return ServiceResult<EmployeeResponse?>.Fail(ServiceErrors.NotFound<Employee>());
+                return ServiceResult<EmployeeResponse?>.Fail(ServiceErrors.NotFound<Employee>(id));
             }
 
             return ServiceResult<EmployeeResponse?>.Ok(employee.Adapt<EmployeeResponse>());
@@ -60,7 +60,7 @@ namespace CompanyStructure.Infrastructure.Services.Employees
             if (!companyExists)
             {
                 _logger.LogWarning("Company with ID {CompanyId} does not exist.", companyId);
-                return ServiceResult<EmployeeResponse>.Fail(ServiceErrors.NotFound<Company>());
+                return ServiceResult<EmployeeResponse>.Fail(ServiceErrors.NotFound<Company>(companyId));
             }
 
             var emailValidation = await ValidateEmailIsUniqueAsync(dto.Email);
@@ -85,7 +85,7 @@ namespace CompanyStructure.Infrastructure.Services.Employees
             if (employee == null)
             {
                 _logger.LogWarning("Employee with ID {EmployeeId} not found.", id);
-                return ServiceResult<EmployeeResponse>.Fail(ServiceErrors.NotFound<Employee>());
+                return ServiceResult<EmployeeResponse>.Fail(ServiceErrors.NotFound<Employee>(id));
             }
 
             var emailValidation = await ValidateEmailIsUniqueAsync(dto.Email, id);
@@ -101,13 +101,13 @@ namespace CompanyStructure.Infrastructure.Services.Employees
             return ServiceResult<EmployeeResponse>.Ok(employee.Adapt<EmployeeResponse>());
         }
 
-        public async Task<ServiceResult<bool>> DeleteEmployeeAsync(int id)
+        public async Task<ServiceResult> DeleteEmployeeAsync(int id)
         {
             var employee = await _db.Employees.FindAsync(id);
             if (employee == null)
             {
                 _logger.LogWarning("Employee with ID {EmployeeId} not found.", id);
-                return ServiceResult<bool>.Fail(ServiceErrors.NotFound<Employee>());
+                return ServiceResult.Fail(ServiceErrors.NotFound<Employee>(id));
             }
 
             // Check if the employee is a leader of any node
@@ -117,10 +117,10 @@ namespace CompanyStructure.Infrastructure.Services.Employees
             await _db.SaveChangesAsync();
 
             _logger.LogInformation("Employee with ID {EmployeeId} deleted successfully.", id);
-            return ServiceResult<bool>.Ok(true);
+            return ServiceResult.Ok();
         }
 
-        private async Task<ServiceResult<bool>> ValidateEmailIsUniqueAsync(string email, int? excludeId = null)
+        private async Task<ServiceResult> ValidateEmailIsUniqueAsync(string email, int? excludeId = null)
         {
             var emailExists = await _db.Employees
                 .AnyAsync(e => e.Email == email && (!excludeId.HasValue || e.Id != excludeId.Value));
@@ -128,9 +128,9 @@ namespace CompanyStructure.Infrastructure.Services.Employees
             if (emailExists)
             {
                 _logger.LogWarning("Email already exists.");
-                return ServiceResult<bool>.Fail(ServiceErrors.EmailAlreadyExists);
+                return ServiceResult.Fail(ServiceErrors.EmailAlreadyExists);
             }
-            return ServiceResult<bool>.Ok(true);
+            return ServiceResult.Ok();
         }
 
         private async Task ClearLeaderReferencesAsync(int employeeId)

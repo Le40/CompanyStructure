@@ -18,7 +18,7 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
         }
 
         [AllowAnonymous]
-        [HttpGet("/api/Companies/{companyId}/[controller]")]
+        [HttpGet("/api/Companies/{companyId:int}/[controller]")]
         public async Task<IActionResult> GetAll([FromRoute]int companyId, [FromQuery] PaginationQuery pagination)
         {
             var result = await _service.GetAllAsync(companyId, pagination);
@@ -26,7 +26,7 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpPost("/api/Companies/{companyId}/[controller]")]
+        [HttpPost("/api/Companies/{companyId:int}/[controller]")]
         public async Task<IActionResult> Create(CreateNodeRequest dto, int companyId)
         {
             var result = await _service.CreateAsync(dto, companyId);

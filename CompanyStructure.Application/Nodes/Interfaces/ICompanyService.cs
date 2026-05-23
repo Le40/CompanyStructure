@@ -11,6 +11,6 @@ namespace CompanyStructure.Application.Nodes.Interfaces
         Task<ServiceResult<CompanyStructureResponse>> GetStructureByIdAsync(int id);
         Task<ServiceResult<NodeResponse>> CreateAsync(CreateCompanyRequest dto);
         Task<ServiceResult<NodeResponse>> UpdateAsync(int id, UpdateNodeRequest dto);
-        Task<ServiceResult<bool>> DeleteAsync(int id);
+        Task<ServiceResult> DeleteAsync(int id);
     }
 }

@@ -11,16 +11,16 @@ namespace CompanyStructure.WebAPI.Controllers.Employees
     [ApiController]
     public class EmployeesController(IEmployeeService _service) : ControllerBase
     {
-        [Authorize(Roles = "User")]
-        [HttpGet("/api/Companies/{companyId}/[controller]")]
+        [Authorize(Policy = "AuthenticatedUser")]
+        [HttpGet("/api/Companies/{companyId:int}/[controller]")]
         public async Task<IActionResult> GetAllEmployees([FromRoute] int companyId, [FromQuery] PaginationQuery pagination)
         {
             var result = await _service.GetAllEmployeesAsync(companyId, pagination);
             return result.ToActionResult(this);
         }
 
-        [Authorize(Roles = "User")]
-        [HttpPost("/api/Companies/{companyId}/[controller]")]
+        [Authorize(Policy = "AuthenticatedUser")]
+        [HttpPost("/api/Companies/{companyId:int}/[controller]")]
         public async Task<IActionResult> CreateEmployee(int companyId, CreateEmployeeRequest dto)
         {
             var result = await _service.CreateEmployeeAsync(companyId, dto);
@@ -30,7 +30,7 @@ namespace CompanyStructure.WebAPI.Controllers.Employees
             return CreatedAtAction(nameof(GetEmployeeById), new { id = result.Data!.Id }, result.Data);
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminOnly")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetEmployeeById(int id)
         {
@@ -38,7 +38,7 @@ namespace CompanyStructure.WebAPI.Controllers.Employees
             return result.ToActionResult(this);
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminOnly")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEmployee(int id, UpdateEmployeeRequest dto)
         {
@@ -46,15 +46,12 @@ namespace CompanyStructure.WebAPI.Controllers.Employees
             return result.ToActionResult(this);
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminOnly")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(int id)
         {
             var result = await _service.DeleteEmployeeAsync(id);
-            if (!result.Success)
-                return result.ToActionResult(this);
-
-            return NoContent();
+            return result.ToActionResult(this);
         }
     }
 }

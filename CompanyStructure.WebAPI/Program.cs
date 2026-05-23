@@ -18,7 +18,15 @@ builder.Services.AddOpenApi(options =>
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddJwtAuthentication(builder.Configuration);
-
+//Problem details
+builder.Services.AddProblemDetails(options =>
+{
+    options.CustomizeProblemDetails = context =>
+    {
+        context.ProblemDetails.Extensions["traceId"] =
+            context.HttpContext.TraceIdentifier;
+    };
+});
 
 var app = builder.Build();
 
@@ -30,7 +38,7 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseAppExceptionHandling();
+    app.UseExceptionHandler();
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
@@ -47,6 +55,8 @@ if (!app.Environment.IsEnvironment("Testing"))
 app.UseHttpsRedirection();
 // LOGGING REQUESTS
 app.UseAppRequestLogging();
+
+app.UseStatusCodePages();
 
 app.UseAuthentication();
 app.UseAuthorization();

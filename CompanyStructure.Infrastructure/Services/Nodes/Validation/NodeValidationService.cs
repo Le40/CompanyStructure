@@ -21,7 +21,7 @@ namespace CompanyStructure.Infrastructure.Services.Nodes.Validation
             _logger = logger;   
         }
 
-        public async Task<ServiceResult<bool>> ValidateNodeAsync<T>(int? leaderId, string code, int companyId, int? excludeId = null)
+        public async Task<ServiceResult> ValidateNodeAsync<T>(int? leaderId, string code, int companyId, int? excludeId = null)
             where T : class, INode
         {
             var leaderValidation = await ValidateLeaderAsync<T>(leaderId, companyId);
@@ -32,13 +32,13 @@ namespace CompanyStructure.Infrastructure.Services.Nodes.Validation
             if (!codeValidation.Success)
                 return codeValidation;
 
-            return ServiceResult<bool>.Ok(true);
+            return ServiceResult.Ok();
         }
 
-        public async Task<ServiceResult<bool>> ValidateLeaderAsync<T>(int? leaderId, int companyId)
+        public async Task<ServiceResult> ValidateLeaderAsync<T>(int? leaderId, int companyId)
         {
             if (leaderId == null)
-                return ServiceResult<bool>.Ok(true);
+                return ServiceResult.Ok();
 
             var leaderValid = await _db.Employees.AnyAsync(e =>
                 e.Id == leaderId.Value &&
@@ -47,13 +47,13 @@ namespace CompanyStructure.Infrastructure.Services.Nodes.Validation
             if (!leaderValid)
             {
                 _logger.LogWarning("Leader with id {LeaderId} does not exist in companyId {CompanyId}", leaderId, companyId);
-                return ServiceResult<bool>.Fail(ServiceErrors.InvalidLeader<T>());
+                return ServiceResult.Fail(ServiceErrors.InvalidLeader<T>());
             }
 
-            return ServiceResult<bool>.Ok(true);
+            return ServiceResult.Ok();
         }
 
-        public async Task<ServiceResult<bool>> ValidateCodeIsUniqueAsync<T>(
+        public async Task<ServiceResult> ValidateCodeIsUniqueAsync<T>(
             string code,
             int companyId,
             int? excludeId = null)
@@ -67,10 +67,10 @@ namespace CompanyStructure.Infrastructure.Services.Nodes.Validation
             if (exists)
             {
                 _logger.LogWarning("Code for {Type} in company with id {CompanyId} already existst.", typeof(T).Name, companyId);
-                return ServiceResult<bool>.Fail(ServiceErrors.DuplicateCode<T>());
+                return ServiceResult.Fail(ServiceErrors.DuplicateCode<T>(code));
             }
 
-            return ServiceResult<bool>.Ok(true);
+            return ServiceResult.Ok();
         }
     }
 }

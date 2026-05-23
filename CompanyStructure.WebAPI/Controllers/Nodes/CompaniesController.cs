@@ -9,7 +9,7 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class CompaniesController : ControllerBase//: OrganisationNodeController<Company>
+    public class CompaniesController : ControllerBase
     {
         private readonly ICompanyService _service;
 
@@ -34,6 +34,7 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
             return result.ToActionResult(this);
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}/structure")]
         public async Task<IActionResult> GetStructureById(int id)
         {
@@ -42,7 +43,7 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
         }
 
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
         public async Task<IActionResult> Create(CreateCompanyRequest dto)
         {
@@ -53,7 +54,7 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
             return CreatedAtAction(nameof(GetById), new { id = result.Data!.Id }, result.Data);
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminOnly")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdateNodeRequest dto)
         {
@@ -61,15 +62,12 @@ namespace CompanyStructure.WebAPI.Controllers.Nodes
             return result.ToActionResult(this);
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminOnly")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _service.DeleteAsync(id);
-            if (!result.Success)
-                return result.ToActionResult(this);
-
-            return NoContent();
+            return result.ToActionResult(this);
         }
     }
 }

@@ -39,7 +39,7 @@ namespace CompanyStructure.Infrastructure.Services.Nodes
             var node = await _db.Companies.FindAsync(id);
             if (node == null)
             {
-                return ServiceResult<NodeResponse?>.Fail(ServiceErrors.NotFound<Company>());
+                return ServiceResult<NodeResponse?>.Fail(ServiceErrors.NotFound<Company>(id));
             }
             return ServiceResult<NodeResponse?>.Ok(node.Adapt<NodeResponse>());
         }
@@ -54,7 +54,7 @@ namespace CompanyStructure.Infrastructure.Services.Nodes
 
             if (company == null)
             {
-                return ServiceResult<CompanyStructureResponse>.Fail(ServiceErrors.NotFound<Company>());
+                return ServiceResult<CompanyStructureResponse>.Fail(ServiceErrors.NotFound<Company>(id));
             }
             var structure = company.Adapt<CompanyStructureResponse>();
             return ServiceResult<CompanyStructureResponse>.Ok(structure);
@@ -87,7 +87,7 @@ namespace CompanyStructure.Infrastructure.Services.Nodes
             if (node == null)
             {
                 _logger.LogWarning("Failed to update company. Company with id {Id} was not found.", id);
-                return ServiceResult<NodeResponse>.Fail(ServiceErrors.NotFound<Company>());
+                return ServiceResult<NodeResponse>.Fail(ServiceErrors.NotFound<Company>(id));
             }
 
             var validation = await ValidateUpdateAsync(dto, id);
@@ -103,32 +103,32 @@ namespace CompanyStructure.Infrastructure.Services.Nodes
             return ServiceResult<NodeResponse>.Ok(node.Adapt<NodeResponse>());
         }
 
-        public async Task<ServiceResult<bool>> DeleteAsync(int id)
+        public async Task<ServiceResult> DeleteAsync(int id)
         {
             var node = await _db.Companies.FindAsync(id);
             if (node == null) {
                 _logger.LogWarning("Failed to delete company. Company with id {Id} was not found.", id);
-                return ServiceResult<bool>.Fail(ServiceErrors.NotFound<Company>());
+                return ServiceResult.Fail(ServiceErrors.NotFound<Company>(id));
             }
             _db.Companies.Remove(node);
             await _db.SaveChangesAsync();
 
             _logger.LogInformation("Company with id {Id} deleted successfully.", id);
-            return ServiceResult<bool>.Ok(true);
+            return ServiceResult.Ok();
         }
 
-        private async Task<ServiceResult<bool>> ValidateCreateAsync(CreateCompanyRequest dto)
+        private async Task<ServiceResult> ValidateCreateAsync(CreateCompanyRequest dto)
         {
             var codeExists = await _db.Companies.AnyAsync(d => d.Code == dto.Code);
             if (codeExists)
             {
                 _logger.LogWarning("Failed to create company. Company with code {Code} already exists.", dto.Code);
-                return ServiceResult<bool>.Fail(ServiceErrors.DuplicateCode<Company>());
+                return ServiceResult.Fail(ServiceErrors.DuplicateCode<Company>(dto.Code));
             }
-            return ServiceResult<bool>.Ok(true);
+            return ServiceResult.Ok();
         }
 
-        private async Task<ServiceResult<bool>> ValidateUpdateAsync(UpdateNodeRequest dto, int id)
+        private async Task<ServiceResult> ValidateUpdateAsync(UpdateNodeRequest dto, int id)
         {
             var leaderValidation = await _validation.ValidateLeaderAsync<Company>(dto.LeaderId, id);
 
@@ -139,9 +139,9 @@ namespace CompanyStructure.Infrastructure.Services.Nodes
             if (codeExists)
             {
                 _logger.LogWarning("Failed to create company. Company with code {Code} already exists.", dto.Code);
-                return ServiceResult<bool>.Fail(ServiceErrors.DuplicateCode<Company>());
+                return ServiceResult.Fail(ServiceErrors.DuplicateCode<Company>(dto.Code));
             }
-            return ServiceResult<bool>.Ok(true);
+            return ServiceResult.Ok();
         }
     }   
 }

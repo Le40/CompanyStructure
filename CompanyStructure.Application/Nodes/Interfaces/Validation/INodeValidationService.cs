@@ -5,10 +5,10 @@ namespace CompanyStructure.Application.Nodes.Interfaces.Validation
 {
     public interface INodeValidationService
     {
-        Task<ServiceResult<bool>> ValidateNodeAsync<T>(int? leaderId, string code, int companyId, int? excludeId = null)
+        Task<ServiceResult> ValidateNodeAsync<T>(int? leaderId, string code, int companyId, int? excludeId = null)
             where T : class, INode;
-        Task<ServiceResult<bool>> ValidateLeaderAsync<T>(int? leaderId, int companyId);
-        Task<ServiceResult<bool>> ValidateCodeIsUniqueAsync<T>(
+        Task<ServiceResult> ValidateLeaderAsync<T>(int? leaderId, int companyId);
+        Task<ServiceResult> ValidateCodeIsUniqueAsync<T>(
             string code,
             int companyId,
             int? excludeId = null)

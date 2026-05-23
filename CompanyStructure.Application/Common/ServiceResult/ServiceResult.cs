@@ -1,5 +1,18 @@
 ﻿namespace CompanyStructure.Application.Common.ServiceResult
 {
+    public record ServiceResult
+    {
+        public bool Success { get; init; }
+        public ServiceError? Error { get; init; }
+
+        public static ServiceResult Ok() =>
+            new() { Success = true};
+
+        public static ServiceResult Fail(ServiceError error) =>
+            new() { Success = false, Error = error };
+    }
+
+
     public record ServiceResult<T>
     {
         public bool Success { get; init; }
@@ -19,9 +32,14 @@
         NotFound,
         Conflict,
         Unauthorized,
-        Forbidden
+        Forbidden,
+        Unexpected
     }
 
-    public record ServiceError(string Code, ServiceErrorType Type, string Message);
+    public sealed record ServiceError(
+        string Code, 
+        string Message, 
+        ServiceErrorType Type,
+        IReadOnlyDictionary<string, object?>? Metadata = null);
 
 }
