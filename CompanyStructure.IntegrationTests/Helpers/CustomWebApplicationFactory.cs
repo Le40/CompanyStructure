@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace CompanyStructure.IntegrationTests;
+namespace CompanyStructure.IntegrationTests.Helpers;
 
 public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
@@ -22,6 +22,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             services.RemoveAll<DbContextOptions<AppDbContext>>();
             services.RemoveAll<DbContextOptions>();
             services.RemoveAll<IDbContextOptionsConfiguration<AppDbContext>>();
+            services.AddScoped<TestDataSeeder>();
 
             _connection.Open();
 

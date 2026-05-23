@@ -1,15 +1,16 @@
 ﻿using CompanyStructure.Application.Common.Pagination;
 using CompanyStructure.Application.Common.ServiceResult;
 using CompanyStructure.Application.Employees;
-using CompanyStructure.Infrastructure.Extensions;
-using CompanyStructure.Domain.Models;
-using CompanyStructure.Infrastructure.Data;
-using Mapster;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using CompanyStructure.Application.Nodes.DTOs;
 using CompanyStructure.Application.Nodes.Interfaces;
 using CompanyStructure.Application.Nodes.Interfaces.Validation;
+using CompanyStructure.Domain.Models;
+using CompanyStructure.Infrastructure.Data;
+using CompanyStructure.Infrastructure.Extensions;
+using Mapster;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System.Xml.Linq;
 
 namespace CompanyStructure.Infrastructure.Services.Nodes
 {
@@ -134,7 +135,7 @@ namespace CompanyStructure.Infrastructure.Services.Nodes
             if (!leaderValidation.Success)
                 return leaderValidation;
 
-            var codeExists = await _db.Companies.AnyAsync(d => d.Code == dto.Code);
+            var codeExists = await _db.Companies.AnyAsync(d => d.Code == dto.Code && d.Id != id);
             if (codeExists)
             {
                 _logger.LogWarning("Failed to create company. Company with code {Code} already exists.", dto.Code);
