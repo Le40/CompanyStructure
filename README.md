@@ -5,17 +5,21 @@ REST API for managing company organizational structure and employees.
 The API supports:
 - Companies, Divisions, Projects, Departments, Employees
 - Leaders for organization nodes
-- Basic validation and business rules
+- Validation and business rules
+- JWT authentication and role-based authorization
 - SQL Server database storage
 - Scalar API documentation
 - TeaPie API tests
 - xUnit integration tests
 - GitHub Actions CI pipeline
+- Docker support
 
 ## Notes
+
 - API uses DTOs for request and response models.
-- Service layer returns controlled results using ServiceResult.
-- Authentication and authorization were not implemented because they were outside the assignment scope. In a production environment, endpoints managing employee data should be protected using JWT/OIDC authentication and role-based authorization.
+- Service layer returns controlled results using `ServiceResult`.
+- Request logging and centralized exception handling are implemented through custom middleware.
+- Integration tests use custom test factories and fake authentication handlers for protected endpoint testing.
 
 ## Technologies
 
@@ -23,8 +27,11 @@ The API supports:
 - C#
 - Entity Framework Core
 - Microsoft SQL Server
+- JWT Authentication
 - Scalar
 - TeaPie
+- xUnit
+- Docker
 
 ## Prerequisites
 
@@ -36,13 +43,57 @@ For local development without Docker:
 - .NET 10 SDK
 - Microsoft SQL Server / SQL Server Express
 - SQL Server Management Studio
-- TeaPie CLI, optional for running API tests
+- TeaPie CLI (optional)
 
-TeaPie installation:
+## Authentication
 
-```powershell
-dotnet tool install -g TeaPie.Tool
+The API uses JWT Bearer authentication.
+
+Two roles are supported:
+- `Admin`
+- `User`
+
+Example protected endpoints:
+
+```csharp
+[Authorize]
 ```
+
+```csharp
+[Authorize(Roles = "Admin")]
+```
+
+### Login endpoint
+
+```http
+POST /api/auth/login
+```
+
+Example request:
+
+```json
+{
+  "username": "admin",
+  "password": "admin123"
+}
+```
+
+Example response:
+
+```json
+{
+  "token": "jwt-token",
+  "role": "Admin"
+}
+```
+
+Test users:
+
+| Username | Password | Role |
+|---|---|---|
+| admin | admin123 | Admin |
+| user | user123 | User |
+
 
 ## Getting started
 ### 1. Clone repository
@@ -125,32 +176,6 @@ https://localhost:7150/scalar
 
 ```powershell
 dotnet test
-```
-
-### Running TeaPie tests
-Tests are located in:
-```
-\Tests
-```
-Before running tests, reset test data. Open SQL Server Management Studio and execute:
-```
-database/reset-test-data.sql
-```
-Then run the API and execute tests from solution root:
-```powershell
-teapie test .\Tests
-```
-TeaPie uses:
-```
-Tests/env.json
-```
-to configure the base API URL. If your API runs on a different port, update:
-```json
-{
-  "$shared": {
-    "baseUrl": "http://localhost:8080"
-  }
-}
 ```
 
 
