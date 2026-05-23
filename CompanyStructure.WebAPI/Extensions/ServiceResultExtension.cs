@@ -1,7 +1,7 @@
 ﻿using CompanyStructure.Application.Common.ServiceResult;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CompanyStructure.WebAPI.Helpers
+namespace CompanyStructure.WebAPI.Extensions
 {
     public static class ServiceResultExtension
     {
@@ -26,11 +26,11 @@ namespace CompanyStructure.WebAPI.Helpers
                 ServiceErrorType.Validation =>
                     controller.BadRequest(new { code = result.Error.Code, message = result.Error.Message }),
 
-                /*ServiceErrorType.Unauthorized =>
+                ServiceErrorType.Unauthorized =>
                     controller.Unauthorized(new { code = result.Error.Code, message = result.Error.Message }),
 
                 ServiceErrorType.Forbidden =>
-                    controller.StatusCode(403, new { code = result.Error.Code, message = result.Error.Message }),*/
+                    controller.StatusCode(403, new { code = result.Error.Code, message = result.Error.Message }),
 
                 _ =>
                     controller.BadRequest(new { code = result.Error.Code, message = result.Error.Message }),

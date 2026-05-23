@@ -1,46 +1,24 @@
 using CompanyStructure.Application;
 using CompanyStructure.Infrastructure;
 using CompanyStructure.Infrastructure.Data;
-using Microsoft.AspNetCore.Diagnostics;
+using CompanyStructure.WebAPI.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using ScalarDotNetExample;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+// So scalar shows auth option
 builder.Services.AddOpenApi(options =>
-{
-    options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
-});
+    options.AddDocumentTransformer<BearerSecuritySchemeTransformer>());
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
+builder.Services.AddJwtAuthentication(builder.Configuration);
 
-var jwtSettings = builder.Configuration.GetSection("Jwt");
-var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
-
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(key)
-    };
-});
-builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -49,6 +27,12 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
+}
+else
+{
+    app.UseAppExceptionHandling();
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
 }
 
 if (!app.Environment.IsEnvironment("Testing"))
@@ -60,29 +44,9 @@ if (!app.Environment.IsEnvironment("Testing"))
     }
 }
 
-app.UseExceptionHandler(errorApp =>
-{
-    errorApp.Run(async context =>
-    {
-        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-        var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
-
-        logger.LogError(exceptionHandlerPathFeature?.Error,
-            "An unhandled exception occurred while processing the request {Path}.",
-            context.Request.Path);
-
-        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-        context.Response.ContentType = "application/json";
-
-        await context.Response.WriteAsJsonAsync(new
-        {
-            Message = "An unexpected error occurred."
-        });
-
-    });
-});
-
 app.UseHttpsRedirection();
+// LOGGING REQUESTS
+app.UseAppRequestLogging();
 
 app.UseAuthentication();
 app.UseAuthorization();

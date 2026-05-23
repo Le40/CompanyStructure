@@ -17,9 +17,9 @@
     {
         Validation,
         NotFound,
-        Conflict/*,
+        Conflict,
         Unauthorized,
-        Forbidden*/
+        Forbidden
     }
 
     public record ServiceError(string Code, ServiceErrorType Type, string Message);

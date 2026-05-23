@@ -1,7 +1,7 @@
 ﻿using CompanyStructure.Application.Common.Pagination;
 using CompanyStructure.Application.Employees.DTOs;
 using CompanyStructure.Application.Employees.Interfaces;
-using CompanyStructure.WebAPI.Helpers;
+using CompanyStructure.WebAPI.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

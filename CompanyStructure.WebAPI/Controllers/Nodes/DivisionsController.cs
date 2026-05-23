@@ -2,7 +2,7 @@
 using CompanyStructure.Application.Nodes.DTOs;
 using CompanyStructure.Application.Nodes.Interfaces;
 using CompanyStructure.Domain.Models;
-using CompanyStructure.WebAPI.Helpers;
+using CompanyStructure.WebAPI.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
